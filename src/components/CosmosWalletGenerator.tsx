@@ -3,7 +3,7 @@ import { bech32 } from 'bech32';
 import { Card, Form, Input, Button, Typography, message, Space } from 'antd';
 import { CopyOutlined, WalletOutlined, SwapOutlined } from '@ant-design/icons';
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 export function CosmosWalletGenerator() {
   const [form] = Form.useForm();

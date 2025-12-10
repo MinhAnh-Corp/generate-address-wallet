@@ -1,135 +1,125 @@
-import { useState, useEffect } from "react";
-import { bech32 } from "bech32";
+import { useState, useEffect } from 'react';
+import { bech32 } from 'bech32';
+import { Card, Form, Input, Button, Typography, message, Space } from 'antd';
+import { CopyOutlined, WalletOutlined, SwapOutlined } from '@ant-design/icons';
+
+const { Title, Text } = Typography;
 
 export function CosmosWalletGenerator() {
-    const [existingAddress, setExistingAddress] = useState("");
-    const [networkPrefix, setNetworkPrefix] = useState("stoc");
-    const [generatedAddress, setGeneratedAddress] = useState("");
-    const [error, setError] = useState("");
+  const [form] = Form.useForm();
+  const [generatedAddress, setGeneratedAddress] = useState('');
+  const [hasError, setHasError] = useState(false);
 
-    useEffect(() => {
-        const generateAddress = () => {
-            setError("");
-            setGeneratedAddress("");
+  // Initialize form values if needed
+  useEffect(() => {
+    form.setFieldsValue({
+      networkPrefix: 'stoc'
+    });
+  }, [form]);
 
-            if (!existingAddress) return;
+  const handleValuesChange = (_: any, allValues: any) => {
+    const { existingAddress, networkPrefix } = allValues;
+    generateAddress(existingAddress, networkPrefix);
+  };
 
-            try {
-                if (!existingAddress.startsWith("cosmos")) {
-                    // Allow non-cosmos source addresses too, but user specific "cosmosXXX" in prompt.
-                }
+  const generateAddress = (existingAddress: string, networkPrefix: string) => {
+    setGeneratedAddress('');
+    setHasError(false);
 
-                const decoded = bech32.decode(existingAddress);
+    if (!existingAddress) return;
 
-                if (!networkPrefix) {
-                    setError("Network prefix is required");
-                    return;
-                }
+    try {
+      const decoded = bech32.decode(existingAddress);
+      
+      if (!networkPrefix) {
+        // Just silent return if prefix is empty, form validation will handle visual error if submitted (though we calculate inline)
+        return;
+      }
 
-                const newAddress = bech32.encode(networkPrefix, decoded.words);
-                setGeneratedAddress(newAddress);
-            } catch {
-                // It might fail if address is incomplete or invalid bech32
-                if (existingAddress.length > 10) {
-                    // arbitrary length to start showing errors
-                    setError("Invalid address format");
-                }
-            }
-        };
+      const newAddress = bech32.encode(networkPrefix, decoded.words);
+      setGeneratedAddress(newAddress);
+    } catch {
+       if (existingAddress.length > 5) { // Only flag error if user has typed something substantial
+         setHasError(true);
+       }
+    }
+  };
 
-        generateAddress();
-    }, [existingAddress, networkPrefix]);
+  const copyToClipboard = () => {
+    if (generatedAddress) {
+      navigator.clipboard.writeText(generatedAddress);
+      message.success('Address copied to clipboard!');
+    }
+  };
 
-    const copyToClipboard = () => {
-        if (generatedAddress) {
-            navigator.clipboard.writeText(generatedAddress);
-            alert("Address copied to clipboard!");
-        }
-    };
-
-    return (
-        <div
-            style={{
-                boxSizing: "border-box",
-                padding: "20px",
-                border: "1px solid #ccc",
-                borderRadius: "8px",
-                maxWidth: "1000px",
-                width: "100%",
-                minWidth: "min(600px, calc(100vw - 4rem))",
-                margin: "20px auto",
-            }}
+  return (
+    <Card 
+      title={<Space><WalletOutlined /> Cosmos Address Converter</Space>} 
+      style={{ maxWidth: 600, margin: '40px auto', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+    >
+      <Form
+        form={form}
+        layout="vertical"
+        onValuesChange={handleValuesChange}
+        initialValues={{ networkPrefix: 'stoc' }}
+      >
+        <Form.Item
+          label="Existing Cosmos Address"
+          name="existingAddress"
+          validateStatus={hasError ? 'error' : ''}
+          help={hasError ? 'Invalid bech32 address' : null}
         >
-            <h2>Cosmos Wallet Generator</h2>
+          <Input 
+            placeholder="cosmos1..." 
+            size="large" 
+            allowClear
+            style={{ fontFamily: 'monospace' }}
+          />
+        </Form.Item>
 
-            <div style={{ marginBottom: "15px", textAlign: "left" }}>
-                <label style={{ display: "block", marginBottom: "5px" }}>
-                    Existing Cosmos Address:
-                </label>
-                <input
-                    type="text"
-                    value={existingAddress}
-                    onChange={(e) => setExistingAddress(e.target.value)}
-                    placeholder="cosmos1..."
-                    style={{
-                        width: "100%",
-                        padding: "8px",
-                        boxSizing: "border-box",
-                        fontFamily: "monospace",
-                    }}
-                />
-            </div>
-
-            <div style={{ marginBottom: "15px", textAlign: "left" }}>
-                <label style={{ display: "block", marginBottom: "5px" }}>
-                    Network Prefix:
-                </label>
-                <input
-                    type="text"
-                    value={networkPrefix}
-                    onChange={(e) => setNetworkPrefix(e.target.value)}
-                    placeholder="stoc"
-                    style={{
-                        width: "100%",
-                        padding: "8px",
-                        boxSizing: "border-box",
-                        fontFamily: "monospace",
-                    }}
-                />
-            </div>
-
-            {error && (
-                <div style={{ color: "red", marginBottom: "15px", textAlign: "left" }}>
-                    {error}
-                </div>
-            )}
-
-            <div style={{ marginBottom: "15px", textAlign: "left" }}>
-                <label style={{ display: "block", marginBottom: "5px" }}>
-                    Generated Address:
-                </label>
-                <div style={{ display: "flex", gap: "10px" }}>
-                    <input
-                        type="text"
-                        value={generatedAddress}
-                        disabled
-                        style={{
-                            flex: 1,
-                            padding: "8px",
-                            backgroundColor: "#f5f5f5",
-                            color: "#333",
-                            fontFamily: "monospace",
-                        }}
-                    />
-                    <button
-                        onClick={copyToClipboard}
-                        disabled={!generatedAddress}
-                        style={{ padding: "8px 16px", cursor: "pointer" }}
-                    >
-                        Copy
-                    </button>
-                </div>
-            </div>
+        <div style={{ display: 'flex', justifyContent: 'center', margin: '10px 0' }}>
+            <SwapOutlined rotate={90} style={{ fontSize: '20px', color: '#1890ff' }} />
         </div>
-    );
+
+        <Form.Item
+          label="Network Prefix"
+          name="networkPrefix"
+          rules={[{ required: true, message: 'Please input network prefix!' }]}
+        >
+          <Input 
+            placeholder="e.g. stoc" 
+            size="large"
+            style={{ fontFamily: 'monospace' }}
+          />
+        </Form.Item>
+
+        <Form.Item label="Generated Address">
+          <Space.Compact style={{ width: '100%' }}>
+            <Input
+              value={generatedAddress}
+              readOnly
+              size="large"
+              style={{ fontFamily: 'monospace', backgroundColor: '#f5f5f5', color: '#000' }}
+              placeholder="Generated address will appear here"
+            />
+            <Button 
+              type="primary" 
+              icon={<CopyOutlined />} 
+              onClick={copyToClipboard}
+              disabled={!generatedAddress}
+              size="large"
+            >
+              Copy
+            </Button>
+          </Space.Compact>
+        </Form.Item>
+
+        <div style={{ marginTop: 20, textAlign: 'center' }}>
+            <Text type="secondary" style={{ fontSize: '12px' }}>
+                Converts any Bech32 address to a new prefix while preserving the underlying public key hash.
+            </Text>
+        </div>
+      </Form>
+    </Card>
+  );
 }

@@ -7,13 +7,29 @@ import importPlugin from 'eslint-plugin-import'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores(['dist', 'vite.config.ts']),
   js.configs.recommended,
   ...tseslint.configs.recommended,
-  ...reactHooks.configs.flat.recommended,
   reactRefresh.configs.vite,
   {
+    files: ['vite.config.ts'],
+    languageOptions: {
+      ecmaVersion: 2020,
+      sourceType: 'module',
+      globals: globals.node,
+      parser: tseslint.parser,
+      parserOptions: {
+        ecmaVersion: 2020,
+        sourceType: 'module',
+      },
+    },
+  },
+  {
     files: ['**/*.{ts,tsx}'],
+    plugins: {
+      'react-hooks': reactHooks,
+      import: importPlugin,
+    },
     languageOptions: {
       ecmaVersion: 2020,
       sourceType: 'module',
@@ -29,10 +45,10 @@ export default defineConfig([
         tsconfigRootDir: import.meta.dirname,
       },
     },
-    plugins: {
-      import: importPlugin,
-    },
     rules: {
+      // React Hooks rules
+      ...reactHooks.configs.recommended.rules,
+
       // Code style and formatting rules
       'no-multi-spaces': ['error', {
         ignoreEOLComments: false,

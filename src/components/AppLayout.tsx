@@ -1,14 +1,13 @@
 import { useState, useEffect } from 'react';
 
 import {
-  WalletOutlined, SwapOutlined, MoonOutlined, SunOutlined, MenuOutlined, KeyOutlined, TeamOutlined,
+  WalletOutlined, SwapOutlined, MenuOutlined, KeyOutlined, TeamOutlined,
 } from '@ant-design/icons';
-import { Expand } from '@theme-toggles/react';
-import '@theme-toggles/react/css/Expand.css';
 import {
-  Layout, Menu, Switch, Space, Typography, theme, Drawer, Button,
+  Layout, Menu, Typography, theme, Drawer, Button,
 } from 'antd';
 import { useAtom } from 'jotai';
+import { useTranslation } from 'react-i18next';
 
 import {
   selectedPageAtom,
@@ -17,7 +16,9 @@ import type {
   MenuKey,
 } from '../store/navigation';
 
+import { CodeExplanationButton } from './CodeExplanationButton';
 import { CosmosWalletGenerator } from './CosmosWalletGenerator';
+import { Header } from './Header';
 import { MnemonicGenerator } from './MnemonicGenerator';
 import { UniversalWalletGenerator } from './UniversalWalletGenerator';
 import { WhoWeAre } from './WhoWeAre';
@@ -38,6 +39,7 @@ export function AppLayout({
   const [selectedKey, setSelectedKey] = useAtom(selectedPageAtom);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const { t } = useTranslation();
 
   const { token: { colorBgContainer } } = theme.useToken();
 
@@ -55,22 +57,22 @@ export function AppLayout({
     {
       key: 'mnemonic-generator',
       icon: <KeyOutlined />,
-      label: 'Mnemonic Generator',
+      label: t('Mnemonic Generator'),
     },
     {
       key: 'universal',
       icon: <WalletOutlined />,
-      label: 'Universal Wallet Generator',
+      label: t('Universal Wallet Generator'),
     },
     {
       key: 'cosmos-converter',
       icon: <SwapOutlined />,
-      label: 'Cosmos Address Converter',
+      label: t('Cosmos Address Converter'),
     },
     {
       key: 'who-we-are',
       icon: <TeamOutlined />,
-      label: 'Who We Are',
+      label: t('Who We Are'),
     },
   ];
 
@@ -97,53 +99,36 @@ export function AppLayout({
   };
 
   const sidebarContent = (
-    <>
-      <div style={{
-        padding: '20px 16px', borderBottom: `1px solid ${isDark ? '#303030' : '#f0f0f0'}`,
-      }}>
-        <Space direction="vertical" style={{ width: '100%' }} size="middle">
-          <Text strong style={{ fontSize: '18px' }}>
-            Wallet Tools
-          </Text>
-          <Space>
-            <SunOutlined style={{ color: isDark ? '#888' : '#1890ff' }} />
-            <Switch
-              checked={isDark}
-              onChange={onThemeChange}
-            />
-            <MoonOutlined style={{ color: isDark ? '#1890ff' : '#888' }} />
-          </Space>
-        </Space>
-      </div>
-      <Menu
-        mode="inline"
-        selectedKeys={[selectedKey]}
-        items={menuItems}
-        onClick={({ key }) => handleMenuClick(key as MenuKey)}
-        style={{
-          borderRight: 0,
-          height: isMobile ? 'auto' : 'calc(100vh - 120px)',
-          overflowY: 'auto',
-        }}
-        theme={isDark ? 'dark' : 'light'}
-      />
-    </>
+    <Menu
+      mode="inline"
+      selectedKeys={[selectedKey]}
+      items={menuItems}
+      onClick={({ key }) => handleMenuClick(key as MenuKey)}
+      style={{
+        borderRight: 0,
+        height: isMobile ? 'auto' : 'calc(100vh - 64px)',
+        overflowY: 'auto',
+      }}
+      theme={isDark ? 'dark' : 'light'}
+    />
   );
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
+      <Header isDark={isDark} onThemeChange={onThemeChange} />
+
       {!isMobile && (
         <Sider
           width={250}
           style={{
             position: 'fixed',
             left: 0,
-            top: 0,
+            top: 64,
             bottom: 0,
             background: colorBgContainer,
             borderRight: `1px solid ${isDark ? '#303030' : '#f0f0f0'}`,
             overflow: 'auto',
-            height: '100vh',
+            height: 'calc(100vh - 64px)',
           }}
           theme={isDark ? 'dark' : 'light'}
         >
@@ -151,49 +136,31 @@ export function AppLayout({
         </Sider>
       )}
 
-      <Layout style={{ marginLeft: !isMobile ? 250 : 0 }}>
+      <Layout style={{
+        marginLeft: !isMobile ? 250 : 0, marginTop: 64,
+      }}>
         {isMobile && (
-          <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            zIndex: 1000,
-            padding: '12px 16px',
-            background: colorBgContainer,
-            borderBottom: `1px solid ${isDark ? '#303030' : '#f0f0f0'}`,
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}>
-            <Text strong style={{ fontSize: '16px' }}>
-              Wallet Tools
-            </Text>
-            <Space align="center" size="middle">
-              {/* @ts-expect-error - Expand component type definition issue */}
-              <Expand
-                toggled={isDark}
-                onToggle={onThemeChange}
-                duration={750}
-                className={`theme-toggle-expand ${isDark ? 'theme-dark' : 'theme-light'}`}
-              />
-              <Button
-                type="text"
-                icon={<MenuOutlined style={{ fontSize: '20px' }} />}
-                onClick={() => setDrawerOpen(true)}
-                style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4px 8px',
-                }}
-              />
-            </Space>
-          </div>
+          <Button
+            type="text"
+            icon={<MenuOutlined style={{ fontSize: '20px' }} />}
+            onClick={() => setDrawerOpen(true)}
+            style={{
+              position: 'fixed',
+              top: 16,
+              right: 16,
+              zIndex: 1001,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '4px 8px',
+            }}
+          />
         )}
 
         <Content
           style={{
             margin: isMobile ? '12px' : '24px',
             padding: 0,
-            paddingTop: isMobile ? '56px' : 0,
             minHeight: 280,
             overflow: 'auto',
           }}
@@ -212,16 +179,16 @@ export function AppLayout({
           }}
         >
           <Text type="secondary">
-            Created by{' '}
+            {t('Created by')}{' '}
             <Text strong>MinhAnhCorp</Text>
-            {' '}with ❤️
+            {' '}{t('with')} ❤️
           </Text>
         </Footer>
       </Layout>
 
       {isMobile && (
         <Drawer
-          title="Menu"
+          title={t('Menu')}
           placement="left"
           onClose={() => setDrawerOpen(false)}
           open={drawerOpen}
@@ -240,6 +207,8 @@ export function AppLayout({
           {sidebarContent}
         </Drawer>
       )}
+
+      <CodeExplanationButton />
     </Layout>
   );
 }

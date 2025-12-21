@@ -1,15 +1,24 @@
-import {
-  Card, Space, Typography, Divider,
-} from 'antd';
-import { TeamOutlined, GlobalOutlined } from '@ant-design/icons';
 import { useState, useEffect } from 'react';
 
-const { Title, Paragraph, Text, Link } = Typography;
+import {
+  GithubOutlined, GlobalOutlined, TeamOutlined,
+} from '@ant-design/icons';
+import {
+  Card, Divider, Space, Typography,
+} from 'antd';
+import { useTranslation } from 'react-i18next';
 
+const {
+  Link, Paragraph, Text, Title,
+} = Typography;
+
+const REPOSITORY_LINK = import.meta.env.VITE_REPOSITORY_LINK || 'https://github.com/MinhAnh-Corp/generate-address-wallet';
 const COMPANY_LINK = import.meta.env.VITE_COMPANY_LINK || 'https://xclusivecorp.io/en';
+const GITHUB_CORP_LINK = import.meta.env.VITE_GITHUB_CORP || 'https://github.com/MinhAnh-Corp/';
 
 export function WhoWeAre() {
   const [isMobile, setIsMobile] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const checkMobile = () => {
@@ -26,7 +35,7 @@ export function WhoWeAre() {
       title={
         <Space>
           <TeamOutlined />
-          Who We Are
+          {t('Who We Are')}
         </Space>
       }
       style={{
@@ -43,36 +52,32 @@ export function WhoWeAre() {
       <Space direction="vertical" size="middle" style={{ width: '100%' }}>
         <div>
           <Title level={3}>
-            <GlobalOutlined /> About Xclusive Corporation
+            <GlobalOutlined /> {t('About Xclusive Corporation')}
           </Title>
           <Paragraph style={{ marginBottom: 12 }}>
-            <Text strong>Xclusive Corporation</Text> is a pioneer in providing integrated technology
-            solutions in Vietnam. Established in 2021, we take pride in delivering high-quality
-            software and hardware products that meet the diverse needs of modern businesses.
+            <Text strong>Xclusive Corporation</Text> {t('Xclusive Corporation is a pioneer in providing integrated technology solutions in Vietnam. Established in 2021, we take pride in delivering high-quality software and hardware products that meet the diverse needs of modern businesses.')}
           </Paragraph>
           <Paragraph style={{ marginBottom: 0 }}>
-            With a team of experienced experts and a vision for innovation, Xclusive Corporation is
-            committed to partnering with our clients in their growth, contributing to building a
-            sustainable digital future.
+            {t('With a team of experienced experts and a vision for innovation, Xclusive Corporation is committed to partnering with our clients in their growth, contributing to building a sustainable digital future.')}
           </Paragraph>
         </div>
 
         <Divider />
 
         <div>
-          <Title level={4}>Our Services</Title>
+          <Title level={4}>{t('Our Services')}</Title>
           <ul>
             <li>
-              <Text strong>Outsource:</Text> Website, Application, Dapp, Game development
+              <Text strong>{t('Outsource:')}</Text> {t('Website, Application, Dapp, Game development')}
             </li>
             <li>
-              <Text strong>Product:</Text> Custom software solutions and products
+              <Text strong>{t('Product:')}</Text> {t('Custom software solutions and products')}
             </li>
             <li>
-              <Text strong>Investment:</Text> XC token, XC products, XC hotels, XC Real Estate
+              <Text strong>{t('Investment:')}</Text> {t('XC token, XC products, XC hotels, XC Real Estate')}
             </li>
             <li>
-              <Text strong>Assistance:</Text> Business consulting and technical assistance
+              <Text strong>{t('Assistance:')}</Text> {t('Business consulting and technical assistance')}
             </li>
           </ul>
         </div>
@@ -80,15 +85,12 @@ export function WhoWeAre() {
         <Divider />
 
         <div>
-          <Title level={4}>Our Team</Title>
+          <Title level={4}>{t('Our Team')}</Title>
           <Paragraph style={{ marginBottom: 12 }}>
-            <Text strong>MinhAnhCorp</Text> is our dedicated development team, crafting innovative
-            solutions with passion and expertise. We specialize in blockchain technology, web
-            development, and cutting-edge software engineering.
+            <Text strong>MinhAnhCorp</Text> {t('MinhAnhCorp is our dedicated development team, crafting innovative solutions with passion and expertise. We specialize in blockchain technology, web development, and cutting-edge software engineering.')}
           </Paragraph>
           <Paragraph style={{ marginBottom: 0 }}>
-            <Text strong>XclusiveCorp</Text> represents our business team and company operations,
-            focusing on client relationships, strategic partnerships, and business growth.
+            <Text strong>XclusiveCorp</Text> {t('XclusiveCorp represents our business team and company operations, focusing on client relationships, strategic partnerships, and business growth.')}
           </Paragraph>
         </div>
 
@@ -97,21 +99,38 @@ export function WhoWeAre() {
         <div style={{ textAlign: 'center' }}>
           <Paragraph style={{ marginBottom: 0 }}>
             <Text type="secondary">
-              Learn more about us:
+              {t('Learn more about us:')}
             </Text>
             <br />
-            <Link
-              href={COMPANY_LINK}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ fontSize: '16px' }}
-            >
-              <GlobalOutlined /> Visit Xclusive Corporation
-            </Link>
+            <Space direction="vertical" size="small" style={{ marginTop: 12 }}>
+              <Link
+                href={REPOSITORY_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontSize: '14px' }}
+              >
+                <GithubOutlined /> Repository
+              </Link>
+              <Link
+                href={COMPANY_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontSize: '14px' }}
+              >
+                <GlobalOutlined /> {t('Visit Xclusive Corporation')}
+              </Link>
+              <Link
+                href={GITHUB_CORP_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontSize: '14px' }}
+              >
+                <GithubOutlined /> GitHub Organization
+              </Link>
+            </Space>
           </Paragraph>
         </div>
       </Space>
     </Card>
   );
 }
-

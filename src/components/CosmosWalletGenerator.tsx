@@ -7,13 +7,7 @@ import {
   Card, Form, Input, Button, Typography, message, Space,
 } from 'antd';
 import { bech32 } from 'bech32';
-import { useAtomValue } from 'jotai';
-
-import {
-  explanationsAtom, EXPLANATION_KEYS,
-} from '../store/explanations';
-
-import { CodeExplanationButton } from './CodeExplanationButton';
+import { useTranslation } from 'react-i18next';
 
 const { Text } = Typography;
 
@@ -27,7 +21,7 @@ export function CosmosWalletGenerator() {
   const [generatedAddress, setGeneratedAddress] = useState('');
   const [hasError, setHasError] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const explanations = useAtomValue(explanationsAtom);
+  const { t } = useTranslation();
 
   const handleValuesChange = (_: unknown, allValues: FormValues) => {
     const {
@@ -62,7 +56,7 @@ export function CosmosWalletGenerator() {
   const copyToClipboard = () => {
     if (generatedAddress) {
       navigator.clipboard.writeText(generatedAddress);
-      message.success('Address copied to clipboard!');
+      message.success(t('Cosmos Address copied to clipboard!'));
     }
   };
 
@@ -84,7 +78,7 @@ export function CosmosWalletGenerator() {
 
   return (
     <Card
-      title={<Space><WalletOutlined /> Cosmos Address Converter</Space>}
+      title={<Space><WalletOutlined /> {t('Cosmos Address Converter')}</Space>}
       style={{
         maxWidth: 600,
         margin: isMobile ? '20px auto' : '40px auto',
@@ -103,13 +97,13 @@ export function CosmosWalletGenerator() {
         initialValues={{ networkPrefix: 'stoc' }}
       >
         <Form.Item
-          label="Existing Cosmos Address"
+          label={t('Cosmos Address')}
           name="existingAddress"
           validateStatus={hasError ? 'error' : ''}
-          help={hasError ? 'Invalid bech32 address' : null}
+          help={hasError ? t('Invalid Cosmos address') : null}
         >
           <Input
-            placeholder="cosmos1..."
+            placeholder={t('Enter a Cosmos Bech32 address')}
             size="large"
             allowClear
             style={{ fontFamily: 'monospace' }}
@@ -125,22 +119,22 @@ export function CosmosWalletGenerator() {
         </div>
 
         <Form.Item
-          label="Network Prefix"
+          label={t('Cosmos Address Prefix')}
           name="networkPrefix"
           rules={[
             {
-              required: true, message: 'Please input network prefix!',
+              required: true, message: t('Please enter the new prefix (e.g., stoc, osmo)'),
             },
           ]}
         >
           <Input
-            placeholder="e.g. stoc"
+            placeholder={t('Enter the new prefix (e.g., stoc, osmo)')}
             size="large"
             style={{ fontFamily: 'monospace' }}
           />
         </Form.Item>
 
-        <Form.Item label="Generated Address">
+        <Form.Item label={t('Converted Address')}>
           <Space.Compact style={{ width: '100%' }}>
             <Input
               value={generatedAddress}
@@ -149,7 +143,7 @@ export function CosmosWalletGenerator() {
               style={{
                 fontFamily: 'monospace', backgroundColor: '#f5f5f5', color: '#000',
               }}
-              placeholder="Generated address will appear here"
+              placeholder={t('Converted address will appear here')}
             />
             <Button
               type="primary"
@@ -158,7 +152,7 @@ export function CosmosWalletGenerator() {
               disabled={!generatedAddress}
               size="large"
             >
-              Copy
+              {t('Copy')}
             </Button>
           </Space.Compact>
         </Form.Item>
@@ -167,14 +161,10 @@ export function CosmosWalletGenerator() {
           marginTop: 20, textAlign: 'center',
         }}>
             <Text type="secondary" style={{ fontSize: '12px' }}>
-                Converts any Bech32 address to a new prefix while preserving the underlying public key hash.
+                {t('Convert a Cosmos Bech32 address to a different prefix while preserving the underlying public key hash.')}
             </Text>
         </div>
       </Form>
-
-      <CodeExplanationButton
-        markdown={explanations[EXPLANATION_KEYS.COSMOS_CONVERTER]}
-      />
     </Card>
   );
 }

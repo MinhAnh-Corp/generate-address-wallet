@@ -4,26 +4,38 @@ import { CodeOutlined } from '@ant-design/icons';
 import {
   Button, Modal, Typography, Space,
 } from 'antd';
+import { useAtomValue } from 'jotai';
+import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import remarkGfm from 'remark-gfm';
 
+import { explanationsAtom, EXPLANATION_KEYS } from '../store/explanations';
+import { selectedPageAtom } from '../store/navigation';
+import type { MenuKey } from '../store/navigation';
+
 const {
   Paragraph, Title,
 } = Typography;
 
-interface CodeExplanationButtonProps {
-  markdown: string;
-  title?: string;
-}
+const MENU_KEY_TO_EXPLANATION_KEY: Record<MenuKey, keyof typeof EXPLANATION_KEYS> = {
+  'mnemonic-generator': 'MNEMONIC_GENERATOR',
+  'universal': 'UNIVERSAL_WALLET',
+  'cosmos-converter': 'COSMOS_CONVERTER',
+  'who-we-are': 'WHO_WE_ARE',
+};
 
-export function CodeExplanationButton({
-  markdown, title,
-}: CodeExplanationButtonProps) {
+export function CodeExplanationButton() {
   const [isOpen, setIsOpen] = useState(false);
+  const selectedPage = useAtomValue(selectedPageAtom);
+  const explanations = useAtomValue(explanationsAtom);
+  const { t } = useTranslation();
 
-  const extractedTitle = title || markdown.split('\n').find((line) => line.startsWith('# '))?.replace(/^# /, '').trim() || 'Code Explanation';
+  const explanationKey = MENU_KEY_TO_EXPLANATION_KEY[selectedPage];
+  const markdown = explanations[EXPLANATION_KEYS[explanationKey]];
+
+  const extractedTitle = markdown.split('\n').find((line) => line.startsWith('# '))?.replace(/^# /, '').trim() || t('Code Explanation');
 
   return (
     <>
@@ -45,7 +57,7 @@ export function CodeExplanationButton({
           fontSize: '13px',
         }}
       >
-        How I did it?
+        {t('How I did it?')}
       </Button>
       <Modal
         title={
@@ -58,7 +70,7 @@ export function CodeExplanationButton({
         onCancel={() => setIsOpen(false)}
         footer={[
           <Button key="close" onClick={() => setIsOpen(false)}>
-            Close
+            {t('Close')}
           </Button>,
         ]}
         width="90%"

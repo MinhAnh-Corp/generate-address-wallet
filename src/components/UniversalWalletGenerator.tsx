@@ -14,13 +14,7 @@ import {
 } from 'antd';
 import { ethers } from 'ethers';
 import { ripemd160 } from 'hash.js';
-import { useAtomValue } from 'jotai';
-
-import {
-  explanationsAtom, EXPLANATION_KEYS,
-} from '../store/explanations';
-
-import { CodeExplanationButton } from './CodeExplanationButton';
+import { useTranslation } from 'react-i18next';
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -44,7 +38,7 @@ export function UniversalWalletGenerator() {
   const [walletResult, setWalletResult] = useState<WalletResult | null>(null);
   const [cosmosPrefix, setCosmosPrefix] = useState('cosmos');
   const [isMobile, setIsMobile] = useState(false);
-  const explanations = useAtomValue(explanationsAtom);
+  const { t } = useTranslation();
   const lastSubmittedValues = useRef<{
     input: string;
     inputType: 'mnemonic' | 'privateKey';
@@ -69,7 +63,7 @@ export function UniversalWalletGenerator() {
 
       if (type === 'mnemonic') {
         if (!ethers.Mnemonic.isValidMnemonic(input.trim())) {
-          message.error('Invalid mnemonic phrase');
+          message.error(t('Invalid mnemonic phrase'));
           return;
         }
         const mnemonic = input.trim();
@@ -90,7 +84,7 @@ export function UniversalWalletGenerator() {
       } else {
         const privateKey = input.trim().startsWith('0x') ? input.trim() : `0x${input.trim()}`;
         if (!ethers.isHexString(privateKey) || privateKey.length !== 66) {
-          message.error('Invalid private key. Must be 64 hex characters (with or without 0x prefix)');
+          message.error(t('Invalid private key. Must be 64 hex characters (with or without 0x prefix)'));
           return;
         }
         evmWallet = new ethers.Wallet(privateKey);
@@ -116,10 +110,10 @@ export function UniversalWalletGenerator() {
         cosmosPrefix: currentPrefix,
       });
 
-      message.success('Wallets generated successfully!');
+      message.success(t('Wallets generated successfully!'));
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      message.error(`Error generating wallets: ${errorMessage}`);
+      message.error(t('Error generating wallets: {error}', { error: errorMessage }));
       console.error(error);
     }
   };
@@ -128,7 +122,7 @@ export function UniversalWalletGenerator() {
     const input = values.input?.trim();
     const prefix = values.cosmosPrefix || cosmosPrefix;
     if (!input) {
-      message.error('Please enter mnemonic or private key');
+      message.error(t('Please enter mnemonic or private key'));
       return;
     }
 
@@ -148,7 +142,7 @@ export function UniversalWalletGenerator() {
         && lastInputType === inputType
         && lastPrefix === prefix
       ) {
-        message.warning('No changes detected. Please modify the input or prefix before submitting again.');
+        message.warning(t('No changes detected. Please modify the input or prefix before submitting again.'));
         return;
       }
     }
@@ -158,14 +152,14 @@ export function UniversalWalletGenerator() {
     generateWallets(input, inputType, prefix);
   };
 
-  const copyToClipboard = (text: string, label: string) => {
+  const copyToClipboard = (text: string, labelKey: string) => {
     navigator.clipboard.writeText(text);
-    message.success(`${label} copied to clipboard!`);
+    message.success(t('{label} copied to clipboard!', { label: t(labelKey) }));
   };
 
   return (
     <Card
-      title={<Space><WalletOutlined /> Universal Wallet Generator</Space>}
+      title={<Space><WalletOutlined /> {t('Universal Wallet Generator')}</Space>}
       style={{
         maxWidth: 800,
         margin: isMobile ? '20px auto' : '40px auto',
@@ -182,7 +176,7 @@ export function UniversalWalletGenerator() {
         layout="vertical"
         onFinish={handleSubmit}
       >
-        <Form.Item label="Input Type">
+        <Form.Item label={t('Input Type')}>
           <Radio.Group
             value={inputType}
             onChange={(e) => {
@@ -192,22 +186,22 @@ export function UniversalWalletGenerator() {
               lastSubmittedValues.current = null;
             }}
           >
-            <Radio value="mnemonic">Mnemonic</Radio>
-            <Radio value="privateKey">Private Key</Radio>
+            <Radio value="mnemonic">{t('Mnemonic')}</Radio>
+            <Radio value="privateKey">{t('Private Key')}</Radio>
           </Radio.Group>
         </Form.Item>
 
         <Form.Item
-          label={inputType === 'mnemonic' ? 'Mnemonic Phrase' : 'Private Key'}
+          label={inputType === 'mnemonic' ? t('Mnemonic Phrase') : t('Private Key')}
           name="input"
           rules={[
             {
-              required: true, message: `Please input ${inputType === 'mnemonic' ? 'mnemonic phrase' : 'private key'}!`,
+              required: true, message: inputType === 'mnemonic' ? t('Please input mnemonic phrase!') : t('Please input private key!'),
             },
           ]}
         >
           <TextArea
-            placeholder={inputType === 'mnemonic' ? 'Enter your 12 or 24 word mnemonic phrase' : 'Enter private key (hex format, with or without 0x prefix)'}
+            placeholder={inputType === 'mnemonic' ? t('Enter your 12 or 24 word mnemonic phrase') : t('Enter private key (hex format, with or without 0x prefix)')}
             rows={inputType === 'mnemonic' ? 3 : 2}
             style={{ fontFamily: 'monospace' }}
             onChange={() => {
@@ -217,12 +211,12 @@ export function UniversalWalletGenerator() {
         </Form.Item>
 
         <Form.Item
-          label="Cosmos Address Prefix"
+          label={t('Cosmos Address Prefix')}
           name="cosmosPrefix"
           initialValue="cosmos"
         >
           <Input
-            placeholder="e.g. cosmos, stoc, osmo"
+            placeholder={t('e.g. cosmos, stoc, osmo')}
             onChange={(e) => {
               setCosmosPrefix(e.target.value);
               lastSubmittedValues.current = null;
@@ -233,24 +227,24 @@ export function UniversalWalletGenerator() {
 
         <Form.Item>
           <Button type="primary" htmlType="submit" size="large" block>
-            <KeyOutlined /> Generate Wallets
+            <KeyOutlined /> {t('Generate Wallets')}
           </Button>
         </Form.Item>
       </Form>
 
       {walletResult && (
         <>
-          <Divider>Generated Wallets</Divider>
+          <Divider>{t('Generated Wallets')}</Divider>
 
           <Tabs
             items={[
               {
                 key: 'evm',
-                label: 'EVM Wallet',
+                label: t('EVM Wallet'),
                 children: (
                   <Space direction="vertical" style={{ width: '100%' }} size="large">
                     <div>
-                      <Text strong>Address:</Text>
+                      <Text strong>{t('Address:')}</Text>
                       <Space.Compact style={{
                         width: '100%', marginTop: 8,
                       }}>
@@ -265,12 +259,12 @@ export function UniversalWalletGenerator() {
                           icon={<CopyOutlined />}
                           onClick={() => copyToClipboard(walletResult.evmAddress, 'EVM Address')}
                         >
-                          Copy
+                          {t('Copy')}
                         </Button>
                       </Space.Compact>
                     </div>
                     <div>
-                      <Text strong>Private Key:</Text>
+                      <Text strong>{t('Private Key:')}</Text>
                       <Space.Compact style={{
                         width: '100%', marginTop: 8,
                       }}>
@@ -285,7 +279,7 @@ export function UniversalWalletGenerator() {
                           icon={<CopyOutlined />}
                           onClick={() => copyToClipboard(walletResult.evmPrivateKey, 'EVM Private Key')}
                         >
-                          Copy
+                          {t('Copy')}
                         </Button>
                       </Space.Compact>
                     </div>
@@ -294,11 +288,11 @@ export function UniversalWalletGenerator() {
               },
               {
                 key: 'cosmos',
-                label: 'Cosmos Wallet',
+                label: t('Cosmos Wallet'),
                 children: (
                   <Space direction="vertical" style={{ width: '100%' }} size="large">
                     <div>
-                      <Text strong>Address ({walletResult.cosmosPrefix}):</Text>
+                      <Text strong>{t('Address:')} ({walletResult.cosmosPrefix})</Text>
                       <Space.Compact style={{
                         width: '100%', marginTop: 8,
                       }}>
@@ -313,12 +307,12 @@ export function UniversalWalletGenerator() {
                           icon={<CopyOutlined />}
                           onClick={() => copyToClipboard(walletResult.cosmosAddress, 'Cosmos Address')}
                         >
-                          Copy
+                          {t('Copy')}
                         </Button>
                       </Space.Compact>
                     </div>
                     <div>
-                      <Text strong>Private Key:</Text>
+                      <Text strong>{t('Private Key:')}</Text>
                       <Space.Compact style={{
                         width: '100%', marginTop: 8,
                       }}>
@@ -333,7 +327,7 @@ export function UniversalWalletGenerator() {
                           icon={<CopyOutlined />}
                           onClick={() => copyToClipboard(walletResult.cosmosPrivateKey, 'Cosmos Private Key')}
                         >
-                          Copy
+                          {t('Copy')}
                         </Button>
                       </Space.Compact>
                     </div>
@@ -349,13 +343,9 @@ export function UniversalWalletGenerator() {
         marginTop: 20, textAlign: 'center',
       }}>
         <Text type="secondary" style={{ fontSize: '12px' }}>
-          Generate both EVM and Cosmos wallets from a single mnemonic or private key.
+          {t('Generate both EVM and Cosmos wallets from a single mnemonic or private key.')}
         </Text>
       </div>
-
-      <CodeExplanationButton
-        markdown={explanations[EXPLANATION_KEYS.UNIVERSAL_WALLET]}
-      />
     </Card>
   );
 }

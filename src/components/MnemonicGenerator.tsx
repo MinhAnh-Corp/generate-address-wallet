@@ -8,13 +8,7 @@ import { wordlist } from '@scure/bip39/wordlists/english';
 import {
   Card, Form, Button, Typography, message, Space, Radio, Input, Alert,
 } from 'antd';
-import { useAtomValue } from 'jotai';
-
-import {
-  explanationsAtom, EXPLANATION_KEYS,
-} from '../store/explanations';
-
-import { CodeExplanationButton } from './CodeExplanationButton';
+import { useTranslation } from 'react-i18next';
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -37,7 +31,7 @@ export function MnemonicGenerator() {
   const [form] = Form.useForm();
   const [mnemonic, setMnemonic] = useState('');
   const [isMobile, setIsMobile] = useState(false);
-  const explanations = useAtomValue(explanationsAtom);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const checkMobile = () => {
@@ -54,10 +48,10 @@ export function MnemonicGenerator() {
       const strength = (wordCount / 3) * 32;
       const newMnemonic = generateMnemonic(wordlist, strength);
       setMnemonic(newMnemonic);
-      message.success(`Generated ${wordCount}-word mnemonic successfully!`);
+      message.success(t('Generated {count}-word mnemonic successfully!', { count: wordCount }));
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      message.error(`Error generating mnemonic: ${errorMessage}`);
+      message.error(t('Error generating mnemonic: {error}', { error: errorMessage }));
       console.error(error);
     }
   };
@@ -70,13 +64,13 @@ export function MnemonicGenerator() {
   const copyToClipboard = () => {
     if (mnemonic) {
       navigator.clipboard.writeText(mnemonic);
-      message.success('Mnemonic copied to clipboard!');
+      message.success(t('Mnemonic copied to clipboard!'));
     }
   };
 
   return (
     <Card
-      title={<Space><KeyOutlined /> Mnemonic Generator</Space>}
+      title={<Space><KeyOutlined /> {t('Mnemonic Generator')}</Space>}
       style={{
         maxWidth: 800,
         margin: isMobile ? '20px auto' : '40px auto',
@@ -95,26 +89,26 @@ export function MnemonicGenerator() {
         initialValues={{ wordCount: 12 }}
       >
         <Form.Item
-          label="Number of Words"
+          label={t('Number of Words')}
           name="wordCount"
           rules={[
             {
-              required: true, message: 'Please select number of words!',
+              required: true, message: t('Please select number of words!'),
             },
           ]}
         >
           <Radio.Group>
             {VALID_WORD_COUNTS.map((count) => (
               <Radio key={count} value={count}>
-                {count} words
+                {count} {t('words')}
               </Radio>
             ))}
           </Radio.Group>
         </Form.Item>
 
         <Alert
-          message="Valid word counts"
-          description={`BIP39 supports the following word counts: ${VALID_WORD_COUNTS.join(', ')} words. These correspond to entropy strengths of 128, 160, 192, 224, and 256 bits respectively.`}
+          message={t('Valid word counts')}
+          description={t('BIP39 supports the following word counts: 12, 15, 18, 21, 24 words. These correspond to entropy strengths of 128, 160, 192, 224, and 256 bits respectively.')}
           type="info"
           showIcon
           style={{ marginBottom: 24 }}
@@ -122,7 +116,7 @@ export function MnemonicGenerator() {
 
         <Form.Item>
           <Button type="primary" htmlType="submit" size="large" block icon={<ReloadOutlined />}>
-            Generate Mnemonic
+            {t('Generate Mnemonic')}
           </Button>
         </Form.Item>
       </Form>
@@ -130,7 +124,7 @@ export function MnemonicGenerator() {
       {mnemonic && (
         <>
           <div style={{ marginTop: 24 }}>
-            <Text strong>Generated Mnemonic:</Text>
+            <Text strong>{t('Generated Mnemonic:')}</Text>
             <Space.Compact style={{
               width: '100%', marginTop: 8,
             }}>
@@ -150,7 +144,7 @@ export function MnemonicGenerator() {
                 onClick={copyToClipboard}
                 style={{ height: 'auto' }}
               >
-                Copy
+                {t('Copy')}
               </Button>
             </Space.Compact>
           </div>
@@ -172,13 +166,9 @@ export function MnemonicGenerator() {
         marginTop: 20, textAlign: 'center',
       }}>
         <Text type="secondary" style={{ fontSize: '12px' }}>
-          Generate a BIP39-compliant mnemonic phrase for wallet creation.
+          {t('Generate a BIP39-compliant mnemonic phrase for wallet creation.')}
         </Text>
       </div>
-
-      <CodeExplanationButton
-        markdown={explanations[EXPLANATION_KEYS.MNEMONIC_GENERATOR]}
-      />
     </Card>
   );
 }

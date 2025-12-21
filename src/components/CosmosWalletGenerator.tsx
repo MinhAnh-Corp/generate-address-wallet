@@ -7,27 +7,27 @@ import {
   Card, Form, Input, Button, Typography, message, Space,
 } from 'antd';
 import { bech32 } from 'bech32';
+import { useAtomValue } from 'jotai';
+
+import {
+  explanationsAtom, EXPLANATION_KEYS,
+} from '../store/explanations';
 
 import { CodeExplanationButton } from './CodeExplanationButton';
 
 const { Text } = Typography;
 
+interface FormValues {
+  existingAddress?: string;
+  networkPrefix?: string;
+}
+
 export function CosmosWalletGenerator() {
   const [form] = Form.useForm();
   const [generatedAddress, setGeneratedAddress] = useState('');
   const [hasError, setHasError] = useState(false);
-
-  // Initialize form values if needed
-  useEffect(() => {
-    form.setFieldsValue({
-      networkPrefix: 'stoc',
-    });
-  }, [form]);
-
-  interface FormValues {
-    existingAddress?: string;
-    networkPrefix?: string;
-  }
+  const [isMobile, setIsMobile] = useState(false);
+  const explanations = useAtomValue(explanationsAtom);
 
   const handleValuesChange = (_: unknown, allValues: FormValues) => {
     const {
@@ -66,35 +66,34 @@ export function CosmosWalletGenerator() {
     }
   };
 
-  const codeExplanation = {
-    title: 'How to Convert Cosmos Address Prefix',
-    description: 'This tool converts a Cosmos Bech32 address to a different prefix while preserving the underlying public key hash. Here\'s how it works:',
-    code: `// Convert Cosmos address prefix using bech32
-import { bech32 } from 'bech32';
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
 
-// Decode the existing address to get the data words
-const decoded = bech32.decode(existingAddress);
-// decoded.words contains the address data
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
-// Encode with new prefix
-const newAddress = bech32.encode(newPrefix, decoded.words);
-
-// Example:
-// Input:  cosmos1abc123...
-// Decode: [words array]
-// Encode with 'stoc': stoc1abc123...
-
-// The underlying public key hash remains the same,
-// only the human-readable prefix changes.
-// This allows the same wallet to work across different Cosmos chains.`,
-    language: 'typescript',
-  };
+  useEffect(() => {
+    form.setFieldsValue({
+      networkPrefix: 'stoc',
+    });
+  }, [form]);
 
   return (
     <Card
       title={<Space><WalletOutlined /> Cosmos Address Converter</Space>}
       style={{
-        maxWidth: 600, margin: '40px auto', boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+        maxWidth: 600,
+        margin: isMobile ? '20px auto' : '40px auto',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+      }}
+      styles={{
+        body: {
+          padding: isMobile ? '16px' : '24px',
+        },
       }}
     >
       <Form
@@ -173,7 +172,9 @@ const newAddress = bech32.encode(newPrefix, decoded.words);
         </div>
       </Form>
 
-      <CodeExplanationButton explanation={codeExplanation} />
+      <CodeExplanationButton
+        markdown={explanations[EXPLANATION_KEYS.COSMOS_CONVERTER]}
+      />
     </Card>
   );
 }

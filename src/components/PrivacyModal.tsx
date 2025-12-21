@@ -1,21 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
-import { Modal, Button, Space, Typography } from 'antd';
 import { SafetyOutlined, GithubOutlined } from '@ant-design/icons';
+import {
+  Modal, Button, Space, Typography,
+} from 'antd';
 
-const { Text, Paragraph, Link } = Typography;
+const {
+  Text, Paragraph, Link,
+} = Typography;
 
 const REPOSITORY_LINK = import.meta.env.VITE_REPOSITORY_LINK || 'https://github.com/your-repo';
 
 export function PrivacyModal() {
-  const [isOpen, setIsOpen] = useState(false);
-
-  useEffect(() => {
+  const [isOpen, setIsOpen] = useState(() => {
     const hasSeenNotice = localStorage.getItem('privacy-notice-seen');
-    if (!hasSeenNotice) {
-      setIsOpen(true);
-    }
-  }, []);
+    return !hasSeenNotice;
+  });
 
   const handleOk = () => {
     localStorage.setItem('privacy-notice-seen', 'true');
@@ -62,7 +62,8 @@ export function PrivacyModal() {
 
         <Paragraph>
           <Text type="warning" strong>
-            For safety, please use a new/test wallet when testing this tool. Never use your main wallet's mnemonic or private key.
+            For safety, please use a new/test wallet when testing this tool.
+            Never use your main wallet's mnemonic or private key.
           </Text>
         </Paragraph>
 
@@ -77,4 +78,3 @@ export function PrivacyModal() {
     </Modal>
   );
 }
-

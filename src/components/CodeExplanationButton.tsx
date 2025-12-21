@@ -1,21 +1,29 @@
 import { useState } from 'react';
 
-import { Button, Modal, Typography, Space } from 'antd';
 import { CodeOutlined } from '@ant-design/icons';
+import {
+  Button, Modal, Typography, Space,
+} from 'antd';
+import ReactMarkdown from 'react-markdown';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import remarkGfm from 'remark-gfm';
 
-const { Title, Paragraph, Text } = Typography;
+const {
+  Paragraph, Title,
+} = Typography;
 
 interface CodeExplanationButtonProps {
-  explanation: {
-    title: string;
-    description: string;
-    code: string;
-    language?: string;
-  };
+  markdown: string;
+  title?: string;
 }
 
-export function CodeExplanationButton({ explanation }: CodeExplanationButtonProps) {
+export function CodeExplanationButton({
+  markdown, title,
+}: CodeExplanationButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
+
+  const extractedTitle = title || markdown.split('\n').find((line) => line.startsWith('# '))?.replace(/^# /, '').trim() || 'Code Explanation';
 
   return (
     <>
@@ -43,7 +51,7 @@ export function CodeExplanationButton({ explanation }: CodeExplanationButtonProp
         title={
           <Space>
             <CodeOutlined />
-            {explanation.title}
+            {extractedTitle}
           </Space>
         }
         open={isOpen}
@@ -65,32 +73,54 @@ export function CodeExplanationButton({ explanation }: CodeExplanationButtonProp
         }}
       >
         <Space direction="vertical" size="large" style={{ width: '100%' }}>
-          <Paragraph>{explanation.description}</Paragraph>
-
-          <div>
-            <Title level={5}>Implementation Code:</Title>
-            <pre
-              style={{
-                backgroundColor: '#f5f5f5',
-                padding: '16px',
-                borderRadius: '4px',
-                overflow: 'auto',
-                fontSize: '12px',
-                lineHeight: '1.5',
-              }}
-            >
-              <code>{explanation.code}</code>
-            </pre>
-          </div>
-
-          <Paragraph>
-            <Text type="secondary" italic>
-              You can follow this code to implement the same functionality in your own project.
-            </Text>
-          </Paragraph>
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            components={{
+              p: ({ children }) => <Paragraph>{children}</Paragraph>,
+              h1: () => null,
+              h2: ({ children }) => <Title level={5}>{children}</Title>,
+              code(props) {
+                const {
+                  className, children,
+                } = props;
+                const inline = !className || !className.startsWith('language-');
+                const match = /language-(\w+)/.exec(className || '');
+                const language = match ? match[1] : '';
+                return !inline && language ? (
+                  <div style={{ marginTop: '8px' }}>
+                    <SyntaxHighlighter
+                      style={oneDark}
+                      language={language}
+                      PreTag="div"
+                      customStyle={{
+                        borderRadius: '4px',
+                        fontSize: '12px',
+                        lineHeight: '1.5',
+                      }}
+                    >
+                      {String(children).replace(/\n$/, '')}
+                    </SyntaxHighlighter>
+                  </div>
+                ) : (
+                  <code
+                    className={className}
+                    style={{
+                      backgroundColor: '#f5f5f5',
+                      padding: '2px 4px',
+                      borderRadius: '2px',
+                      fontSize: '12px',
+                    }}
+                  >
+                    {children}
+                  </code>
+                );
+              },
+            }}
+          >
+            {markdown}
+          </ReactMarkdown>
         </Space>
       </Modal>
     </>
   );
 }
-

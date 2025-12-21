@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 import {
   CopyOutlined, WalletOutlined, KeyOutlined,
@@ -12,6 +12,11 @@ import {
 } from 'antd';
 import { ethers } from 'ethers';
 import { ripemd160 } from 'hash.js';
+import { useAtomValue } from 'jotai';
+
+import {
+  explanationsAtom, EXPLANATION_KEYS,
+} from '../store/explanations';
 
 import { CodeExplanationButton } from './CodeExplanationButton';
 
@@ -23,7 +28,6 @@ interface WalletResult {
   evmPrivateKey: string;
   cosmosAddress: string;
   cosmosPrivateKey: string;
-  cosmosAddressHash: Uint8Array;
   cosmosPrefix: string;
 }
 
@@ -37,6 +41,23 @@ export function UniversalWalletGenerator() {
   const [inputType, setInputType] = useState<'mnemonic' | 'privateKey'>('mnemonic');
   const [walletResult, setWalletResult] = useState<WalletResult | null>(null);
   const [cosmosPrefix, setCosmosPrefix] = useState('cosmos');
+  const [isMobile, setIsMobile] = useState(false);
+  const explanations = useAtomValue(explanationsAtom);
+  const lastSubmittedValues = useRef<{
+    input: string;
+    inputType: 'mnemonic' | 'privateKey';
+    prefix: string;
+  } | null>(null);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const generateWallets = async (input: string, type: 'mnemonic' | 'privateKey', prefix?: string) => {
     const currentPrefix = prefix || cosmosPrefix;
@@ -90,7 +111,6 @@ export function UniversalWalletGenerator() {
         evmPrivateKey,
         cosmosAddress,
         cosmosPrivateKey: `0x${cosmosPrivateKeyHex}`,
-        cosmosAddressHash: ripemd160Hash,
         cosmosPrefix: currentPrefix,
       });
 
@@ -109,6 +129,29 @@ export function UniversalWalletGenerator() {
       message.error('Please enter mnemonic or private key');
       return;
     }
+
+    const currentValues = {
+      input,
+      inputType,
+      prefix,
+    };
+
+    if (lastSubmittedValues.current) {
+      const {
+        input: lastInput, inputType: lastInputType, prefix: lastPrefix,
+      } = lastSubmittedValues.current;
+
+      if (
+        lastInput === input
+        && lastInputType === inputType
+        && lastPrefix === prefix
+      ) {
+        message.warning('No changes detected. Please modify the input or prefix before submitting again.');
+        return;
+      }
+    }
+
+    lastSubmittedValues.current = currentValues;
     setCosmosPrefix(prefix);
     generateWallets(input, inputType, prefix);
   };
@@ -118,54 +161,18 @@ export function UniversalWalletGenerator() {
     message.success(`${label} copied to clipboard!`);
   };
 
-  const codeExplanation = {
-    title: 'How to Generate EVM and Cosmos Wallets',
-    description: 'This tool generates both EVM and Cosmos wallets from a mnemonic or private key. Here\'s how it works:',
-    code: `// For EVM Wallet (using ethers.js)
-import { ethers } from 'ethers';
-
-// From mnemonic
-const evmWallet = ethers.Wallet.fromPhrase(mnemonic);
-const evmAddress = evmWallet.address;
-const evmPrivateKey = evmWallet.privateKey;
-
-// From private key
-const evmWallet = new ethers.Wallet(privateKey);
-
-// For Cosmos Wallet (using @cosmjs and @scure/bip32)
-import { Secp256k1, sha256 } from '@cosmjs/crypto';
-import { toBech32, fromHex } from '@cosmjs/encoding';
-import { HDKey } from '@scure/bip32';
-import { mnemonicToSeedSync } from '@scure/bip39';
-import { ripemd160 } from 'hash.js';
-
-// From mnemonic - derive using BIP44 path m/44'/118'/0'/0/0
-const seed = mnemonicToSeedSync(mnemonic);
-const hdKey = HDKey.fromMasterSeed(seed);
-const cosmosNode = hdKey.derive("m/44'/118'/0'/0/0");
-const cosmosPrivateKeyBytes = new Uint8Array(cosmosNode.privateKey);
-
-// From private key directly
-const cosmosPrivateKeyBytes = fromHex(privateKeyHex);
-
-// Generate Cosmos address
-const publicKey = await Secp256k1.makeKeypair(cosmosPrivateKeyBytes);
-const pubkeyBytes = Secp256k1.compressPubkey(publicKey.pubkey);
-const sha256Hash = sha256(pubkeyBytes);
-const ripemd160Hash = ripemd160().update(sha256Hash).digest();
-const cosmosAddress = toBech32('cosmos', new Uint8Array(ripemd160Hash));
-
-// Note: EVM uses derivation path m/44'/60'/0'/0/0
-// Cosmos uses derivation path m/44'/118'/0'/0/0
-// This is why they generate different addresses from the same mnemonic`,
-    language: 'typescript',
-  };
-
   return (
     <Card
       title={<Space><WalletOutlined /> Universal Wallet Generator</Space>}
       style={{
-        maxWidth: 800, margin: '40px auto', boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+        maxWidth: 800,
+        margin: isMobile ? '20px auto' : '40px auto',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+      }}
+      styles={{
+        body: {
+          padding: isMobile ? '16px' : '24px',
+        },
       }}
     >
       <Form
@@ -180,6 +187,7 @@ const cosmosAddress = toBech32('cosmos', new Uint8Array(ripemd160Hash));
               setInputType(e.target.value);
               form.setFieldValue('input', '');
               setWalletResult(null);
+              lastSubmittedValues.current = null;
             }}
           >
             <Radio value="mnemonic">Mnemonic</Radio>
@@ -200,6 +208,9 @@ const cosmosAddress = toBech32('cosmos', new Uint8Array(ripemd160Hash));
             placeholder={inputType === 'mnemonic' ? 'Enter your 12 or 24 word mnemonic phrase' : 'Enter private key (hex format, with or without 0x prefix)'}
             rows={inputType === 'mnemonic' ? 3 : 2}
             style={{ fontFamily: 'monospace' }}
+            onChange={() => {
+              lastSubmittedValues.current = null;
+            }}
           />
         </Form.Item>
 
@@ -212,6 +223,7 @@ const cosmosAddress = toBech32('cosmos', new Uint8Array(ripemd160Hash));
             placeholder="e.g. cosmos, stoc, osmo"
             onChange={(e) => {
               setCosmosPrefix(e.target.value);
+              lastSubmittedValues.current = null;
             }}
             style={{ fontFamily: 'monospace' }}
           />
@@ -339,7 +351,9 @@ const cosmosAddress = toBech32('cosmos', new Uint8Array(ripemd160Hash));
         </Text>
       </div>
 
-      <CodeExplanationButton explanation={codeExplanation} />
+      <CodeExplanationButton
+        markdown={explanations[EXPLANATION_KEYS.UNIVERSAL_WALLET]}
+      />
     </Card>
   );
 }

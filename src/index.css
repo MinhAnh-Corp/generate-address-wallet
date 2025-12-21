@@ -84,8 +84,19 @@ html, body, #root {
     #ff4d4f
   );
   background-size: 300% 100%;
+  position: relative;
   animation: gradient-shift 4s ease infinite, pulse-glow 2s ease-in-out infinite;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  color: #ffffff;
+}
+
+.floating-button-gradient::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: inherit;
+  pointer-events: none;
 }
 
 .floating-button-gradient:hover {

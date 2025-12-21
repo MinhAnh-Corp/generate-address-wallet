@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { SafetyOutlined, GithubOutlined } from '@ant-design/icons';
 import {
@@ -10,18 +10,53 @@ const {
   Text, Paragraph, Link,
 } = Typography;
 
-const REPOSITORY_LINK = import.meta.env.VITE_REPOSITORY_LINK || 'https://github.com/your-repo';
+const REPOSITORY_LINK = import.meta.env.VITE_REPOSITORY_LINK || 'https://github.com/MinhAnh-Corp/generate-address-wallet';
 
-export function PrivacyModal() {
+interface PrivacyModalProps {
+  open?: boolean;
+  onClose?: () => void;
+  autoOpen?: boolean;
+}
+
+export function PrivacyModal({
+  open: controlledOpen, onClose, autoOpen = true,
+}: PrivacyModalProps = {}) {
   const { t } = useTranslation();
-  const [isOpen, setIsOpen] = useState(() => {
+  const [internalOpen, setInternalOpen] = useState(() => {
+    if (controlledOpen !== undefined) {
+      return controlledOpen;
+    }
+    if (!autoOpen) {
+      return false;
+    }
     const hasSeenNotice = localStorage.getItem('privacy-notice-seen');
     return !hasSeenNotice;
   });
 
+  const isControlled = controlledOpen !== undefined;
+  const isOpen = isControlled ? controlledOpen : internalOpen;
+
+  useEffect(() => {
+    if (isControlled && controlledOpen !== undefined) {
+      setInternalOpen(controlledOpen);
+    }
+  }, [controlledOpen, isControlled]);
+
   const handleOk = () => {
     localStorage.setItem('privacy-notice-seen', 'true');
-    setIsOpen(false);
+    if (isControlled && onClose) {
+      onClose();
+    } else {
+      setInternalOpen(false);
+    }
+  };
+
+  const handleCancel = () => {
+    if (isControlled && onClose) {
+      onClose();
+    } else {
+      setInternalOpen(false);
+    }
   };
 
   return (
@@ -34,14 +69,14 @@ export function PrivacyModal() {
       }
       open={isOpen}
       onOk={handleOk}
-      onCancel={handleOk}
+      onCancel={handleCancel}
       footer={[
         <Button key="ok" type="primary" onClick={handleOk}>
           {t('I Understand')}
         </Button>,
       ]}
-      closable={false}
-      maskClosable={false}
+      closable={!autoOpen || isControlled}
+      maskClosable={!autoOpen || isControlled}
       width={600}
     >
       <Space direction="vertical" size="middle" style={{ width: '100%' }}>

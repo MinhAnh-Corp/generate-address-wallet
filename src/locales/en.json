@@ -87,6 +87,10 @@
   "Please input mnemonic phrase!": "Please input mnemonic phrase!",
   "Please input private key!": "Please input private key!",
   "Converted address will appear here": "Converted address will appear here",
-  "{label} copied to clipboard!": "{label} copied to clipboard!"
+  "{label} copied to clipboard!": "{label} copied to clipboard!",
+  "Please enter the new prefix (e.g., stoc, osmo)": "Please enter the new prefix (e.g., stoc, osmo)",
+  "EVM Address": "EVM Address",
+  "EVM Private Key": "EVM Private Key",
+  "Cosmos Private Key": "Cosmos Private Key"
 }
 

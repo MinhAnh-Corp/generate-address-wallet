@@ -87,6 +87,10 @@
   "Please input mnemonic phrase!": "Vui lòng nhập cụm từ mnemonic!",
   "Please input private key!": "Vui lòng nhập khóa riêng!",
   "Converted address will appear here": "Địa chỉ đã chuyển đổi sẽ xuất hiện ở đây",
-  "{label} copied to clipboard!": "{label} đã được sao chép vào clipboard!"
+  "{label} copied to clipboard!": "{label} đã được sao chép vào clipboard!",
+  "Please enter the new prefix (e.g., stoc, osmo)": "Vui lòng nhập tiền tố mới (ví dụ: stoc, osmo)",
+  "EVM Address": "Địa chỉ EVM",
+  "EVM Private Key": "Khóa Riêng EVM",
+  "Cosmos Private Key": "Khóa Riêng Cosmos"
 }
 

@@ -1,6 +1,6 @@
 # How I Built This Web App
 
-I used **Cursor** (an AI-powered code editor) to build this wallet tools web application, along with some experience in web development.
+I used **Cursor** (an AI-powered code editor) to build this wallet tools web application, along with some experience in web development, including building the explorer for [STOChain](https://stochainscan.io/en).
 
 ## Tech Stack
 

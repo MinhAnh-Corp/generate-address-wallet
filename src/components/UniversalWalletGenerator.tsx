@@ -152,7 +152,7 @@ export function UniversalWalletGenerator() {
     generateWallets(input, inputType, prefix);
   };
 
-  const copyToClipboard = (text: string, labelKey: string) => {
+  const copyToClipboard = (text: string, labelKey: 'EVM Address' | 'EVM Private Key' | 'Cosmos Address' | 'Cosmos Private Key') => {
     navigator.clipboard.writeText(text);
     message.success(t('{label} copied to clipboard!', { label: t(labelKey) }));
   };

@@ -33,9 +33,9 @@ export function CodeExplanationButton({
         className="floating-button-gradient"
         style={{
           position: 'fixed',
-          bottom: '16px',
+          bottom: '80px',
           right: '16px',
-          zIndex: 1000,
+          zIndex: 999,
           boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
           borderRadius: '24px',
           padding: '8px 16px',

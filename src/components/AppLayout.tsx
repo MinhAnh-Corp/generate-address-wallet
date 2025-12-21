@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 
 import {
-  WalletOutlined, SwapOutlined, MoonOutlined, SunOutlined, MenuOutlined, KeyOutlined,
+  WalletOutlined, SwapOutlined, MoonOutlined, SunOutlined, MenuOutlined, KeyOutlined, TeamOutlined,
 } from '@ant-design/icons';
+import { Expand } from '@theme-toggles/react';
+import '@theme-toggles/react/css/Expand.css';
 import {
   Layout, Menu, Switch, Space, Typography, theme, Drawer, Button,
 } from 'antd';
@@ -18,9 +20,10 @@ import type {
 import { CosmosWalletGenerator } from './CosmosWalletGenerator';
 import { MnemonicGenerator } from './MnemonicGenerator';
 import { UniversalWalletGenerator } from './UniversalWalletGenerator';
+import { WhoWeAre } from './WhoWeAre';
 
 const {
-  Sider, Content,
+  Sider, Content, Footer,
 } = Layout;
 const { Text } = Typography;
 
@@ -64,6 +67,11 @@ export function AppLayout({
       icon: <SwapOutlined />,
       label: 'Cosmos Address Converter',
     },
+    {
+      key: 'who-we-are',
+      icon: <TeamOutlined />,
+      label: 'Who We Are',
+    },
   ];
 
   const handleMenuClick = (key: MenuKey) => {
@@ -81,6 +89,8 @@ export function AppLayout({
         return <UniversalWalletGenerator />;
       case 'cosmos-converter':
         return <CosmosWalletGenerator />;
+      case 'who-we-are':
+        return <WhoWeAre />;
       default:
         return <MnemonicGenerator />;
     }
@@ -100,8 +110,6 @@ export function AppLayout({
             <Switch
               checked={isDark}
               onChange={onThemeChange}
-              checkedChildren={<MoonOutlined />}
-              unCheckedChildren={<SunOutlined />}
             />
             <MoonOutlined style={{ color: isDark ? '#1890ff' : '#888' }} />
           </Space>
@@ -113,7 +121,9 @@ export function AppLayout({
         items={menuItems}
         onClick={({ key }) => handleMenuClick(key as MenuKey)}
         style={{
-          borderRight: 0, height: isMobile ? 'auto' : 'calc(100vh - 120px)',
+          borderRight: 0,
+          height: isMobile ? 'auto' : 'calc(100vh - 120px)',
+          overflowY: 'auto',
         }}
         theme={isDark ? 'dark' : 'light'}
       />
@@ -126,8 +136,14 @@ export function AppLayout({
         <Sider
           width={250}
           style={{
+            position: 'fixed',
+            left: 0,
+            top: 0,
+            bottom: 0,
             background: colorBgContainer,
             borderRight: `1px solid ${isDark ? '#303030' : '#f0f0f0'}`,
+            overflow: 'auto',
+            height: '100vh',
           }}
           theme={isDark ? 'dark' : 'light'}
         >
@@ -135,9 +151,14 @@ export function AppLayout({
         </Sider>
       )}
 
-      <Layout>
+      <Layout style={{ marginLeft: !isMobile ? 250 : 0 }}>
         {isMobile && (
           <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: 1000,
             padding: '12px 16px',
             background: colorBgContainer,
             borderBottom: `1px solid ${isDark ? '#303030' : '#f0f0f0'}`,
@@ -148,19 +169,21 @@ export function AppLayout({
             <Text strong style={{ fontSize: '16px' }}>
               Wallet Tools
             </Text>
-            <Space>
-              <Switch
-                checked={isDark}
-                onChange={onThemeChange}
-                checkedChildren={<MoonOutlined />}
-                unCheckedChildren={<SunOutlined />}
-                size="small"
+            <Space align="center" size="middle">
+              {/* @ts-expect-error - Expand component type definition issue */}
+              <Expand
+                toggled={isDark}
+                onToggle={onThemeChange}
+                duration={750}
+                className={`theme-toggle-expand ${isDark ? 'theme-dark' : 'theme-light'}`}
               />
               <Button
                 type="text"
-                icon={<MenuOutlined />}
+                icon={<MenuOutlined style={{ fontSize: '20px' }} />}
                 onClick={() => setDrawerOpen(true)}
-                style={{ fontSize: '18px' }}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4px 8px',
+                }}
               />
             </Space>
           </div>
@@ -170,12 +193,30 @@ export function AppLayout({
           style={{
             margin: isMobile ? '12px' : '24px',
             padding: 0,
+            paddingTop: isMobile ? '56px' : 0,
             minHeight: 280,
             overflow: 'auto',
           }}
         >
           {renderContent()}
         </Content>
+
+        <Footer
+          style={{
+            textAlign: 'center',
+            padding: isMobile ? '16px' : '24px',
+            background: colorBgContainer,
+            borderTop: `1px solid ${isDark ? '#303030' : '#f0f0f0'}`,
+            position: 'relative',
+            zIndex: 1000,
+          }}
+        >
+          <Text type="secondary">
+            Created by{' '}
+            <Text strong>MinhAnhCorp</Text>
+            {' '}with ❤️
+          </Text>
+        </Footer>
       </Layout>
 
       {isMobile && (
@@ -188,6 +229,11 @@ export function AppLayout({
           styles={{
             body: {
               padding: 0,
+              background: colorBgContainer,
+            },
+            header: {
+              background: colorBgContainer,
+              borderBottom: `1px solid ${isDark ? '#303030' : '#f0f0f0'}`,
             },
           }}
         >

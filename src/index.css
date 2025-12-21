@@ -110,7 +110,7 @@ html, body, #root {
 
 @media (max-width: 768px) {
   .floating-button-gradient {
-    bottom: 12px !important;
+    bottom: 70px !important;
     right: 12px !important;
     padding: 6px 12px !important;
     font-size: 12px !important;
@@ -120,7 +120,7 @@ html, body, #root {
 
 @media (max-width: 480px) {
   .floating-button-gradient {
-    bottom: 10px !important;
+    bottom: 60px !important;
     right: 10px !important;
     padding: 5px 10px !important;
     font-size: 11px !important;
@@ -172,4 +172,87 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+/* Override Ant Design Menu background in dark theme to be transparent/gray */
+.ant-menu-dark,
+.ant-menu-dark.ant-menu-inline,
+.ant-menu-dark.ant-menu-root,
+ul.ant-menu.ant-menu-dark,
+ul.ant-menu.ant-menu-dark.ant-menu-inline,
+ul.ant-menu.ant-menu-root.ant-menu-dark {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Ensure menu items have transparent background when not selected */
+.ant-menu-dark .ant-menu-item,
+.ant-menu-dark.ant-menu-inline .ant-menu-item,
+.ant-menu-dark .ant-menu-item:not(.ant-menu-item-selected) {
+  background-color: transparent !important;
+}
+
+
+/* Override Ant Design Menu selected item color in dark theme to match light theme */
+.ant-menu-dark .ant-menu-item-selected,
+.ant-menu-dark.ant-menu-inline .ant-menu-item-selected,
+.ant-menu-dark .ant-menu-item.ant-menu-item-selected,
+.ant-menu-dark.ant-menu-inline .ant-menu-item.ant-menu-item-selected {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.ant-menu-dark .ant-menu-item-selected::after,
+.ant-menu-dark.ant-menu-inline .ant-menu-item-selected::after,
+.ant-menu-dark .ant-menu-item.ant-menu-item-selected::after,
+.ant-menu-dark.ant-menu-inline .ant-menu-item.ant-menu-item-selected::after {
+  display: none !important;
+  opacity: 0 !important;
+  width: 0 !important;
+}
+
+.ant-menu-dark .ant-menu-item-selected .ant-menu-title-content,
+.ant-menu-dark.ant-menu-inline .ant-menu-item-selected .ant-menu-title-content,
+.ant-menu-dark .ant-menu-item.ant-menu-item-selected .ant-menu-title-content,
+.ant-menu-dark.ant-menu-inline .ant-menu-item.ant-menu-item-selected .ant-menu-title-content {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.ant-menu-dark .ant-menu-item-selected .anticon,
+.ant-menu-dark.ant-menu-inline .ant-menu-item-selected .anticon,
+.ant-menu-dark .ant-menu-item.ant-menu-item-selected .anticon,
+.ant-menu-dark.ant-menu-inline .ant-menu-item.ant-menu-item-selected .anticon {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* Fix Expand toggle icon color based on theme */
+.theme-toggle-expand.theme-dark {
+  color: #ffffff !important;
+}
+
+.theme-toggle-expand.theme-dark svg,
+.theme-toggle-expand.theme-dark path {
+  fill: #ffffff !important;
+  stroke: #ffffff !important;
+  color: #ffffff !important;
+}
+
+.theme-toggle-expand.theme-light {
+  color: #000000 !important;
+}
+
+.theme-toggle-expand.theme-light svg,
+.theme-toggle-expand.theme-light path {
+  fill: #000000 !important;
+  stroke: #000000 !important;
+  color: #000000 !important;
+}
+
+/* Remove any blue background or border from selected items */
+.ant-menu-dark .ant-menu-item-selected,
+.ant-menu-dark.ant-menu-inline .ant-menu-item-selected,
+.ant-menu-dark .ant-menu-item.ant-menu-item-selected,
+.ant-menu-dark.ant-menu-inline .ant-menu-item.ant-menu-item-selected {
+  border-left: none !important;
+  border-right: none !important;
 }

@@ -26,6 +26,9 @@ importers:
       '@scure/bip39':
         specifier: ^1.2.1
         version: 1.6.0
+      '@theme-toggles/react':
+        specifier: ^2.1.0
+        version: 2.5.0(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       antd:
         specifier: ^6.1.0
         version: 6.1.0(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
@@ -802,6 +805,12 @@ packages:
 
   '@swc/types@0.1.25':
     resolution: {integrity: sha512-iAoY/qRhNH8a/hBvm3zKj9qQ4oc2+3w1unPJa2XvTK3XjeLXtzcCingVPw/9e5mn1+0yPqxcBGp9Jf0pkfMb1g==}
+
+  '@theme-toggles/react@2.5.0':
+    resolution: {integrity: sha512-XvMa2+1lRc9nWj8XGSkAqtKPpMsmGvaXi9e+1e0kipzt9RawvrsA85mEWPIgorOU87sI2aM99GMj2xtZ91KyFw==}
+    peerDependencies:
+      react: ^16 || ^17 || ^18
+      react-dom: ^16 || ^17 || ^18
 
   '@tybys/wasm-util@0.10.1':
     resolution: {integrity: sha512-9tTaPJLSiejZKx+Bmog4uSubteqTvFrVrURwkmHixBo0G4seD0zUxp98E1DzUBJxLQ3NPwXrGKDiVjwx/DpPsg==}
@@ -3321,6 +3330,11 @@ snapshots:
   '@swc/types@0.1.25':
     dependencies:
       '@swc/counter': 0.1.3
+
+  '@theme-toggles/react@2.5.0(react-dom@19.2.1(react@19.2.1))(react@19.2.1)':
+    dependencies:
+      react: 19.2.1
+      react-dom: 19.2.1(react@19.2.1)
 
   '@tybys/wasm-util@0.10.1':
     dependencies:

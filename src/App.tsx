@@ -24,6 +24,13 @@ function App() {
     <ConfigProvider
       theme={{
         algorithm: isDark ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
+        components: {
+          Menu: {
+            darkItemBg: 'transparent',
+            darkSubMenuItemBg: 'transparent',
+            itemSelectedBg: isDark ? 'rgba(255, 255, 255, 0.08)' : undefined,
+          },
+        },
       }}
     >
       <PrivacyModal />

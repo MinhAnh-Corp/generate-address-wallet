@@ -1,6 +1,6 @@
 import { atom } from 'jotai';
 
-export type MenuKey = 'universal' | 'cosmos-converter' | 'mnemonic-generator';
+export type MenuKey = 'universal' | 'cosmos-converter' | 'mnemonic-generator' | 'who-we-are';
 
 const STORAGE_KEY = 'last-visited-page';
 
@@ -14,6 +14,7 @@ const getStoredPage = (): MenuKey => {
     'mnemonic-generator',
     'universal',
     'cosmos-converter',
+    'who-we-are',
   ];
 
   if (stored && validKeys.includes(stored as MenuKey)) {

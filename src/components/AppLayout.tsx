@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 
 import {
-  WalletOutlined, SwapOutlined, MoonOutlined, SunOutlined, MenuOutlined,
+  WalletOutlined, SwapOutlined, MoonOutlined, SunOutlined, MenuOutlined, KeyOutlined,
 } from '@ant-design/icons';
 import {
   Layout, Menu, Switch, Space, Typography, theme, Drawer, Button,
 } from 'antd';
 
 import { CosmosWalletGenerator } from './CosmosWalletGenerator';
+import { MnemonicGenerator } from './MnemonicGenerator';
 import { UniversalWalletGenerator } from './UniversalWalletGenerator';
 
 const {
@@ -15,7 +16,7 @@ const {
 } = Layout;
 const { Text } = Typography;
 
-type MenuKey = 'universal' | 'cosmos-converter';
+type MenuKey = 'universal' | 'cosmos-converter' | 'mnemonic-generator';
 
 interface AppLayoutProps {
   isDark: boolean;
@@ -25,7 +26,7 @@ interface AppLayoutProps {
 export function AppLayout({
   isDark, onThemeChange,
 }: AppLayoutProps) {
-  const [selectedKey, setSelectedKey] = useState<MenuKey>('universal');
+  const [selectedKey, setSelectedKey] = useState<MenuKey>('mnemonic-generator');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -42,6 +43,11 @@ export function AppLayout({
   }, []);
 
   const menuItems = [
+    {
+      key: 'mnemonic-generator',
+      icon: <KeyOutlined />,
+      label: 'Mnemonic Generator',
+    },
     {
       key: 'universal',
       icon: <WalletOutlined />,
@@ -63,12 +69,14 @@ export function AppLayout({
 
   const renderContent = () => {
     switch (selectedKey) {
+      case 'mnemonic-generator':
+        return <MnemonicGenerator />;
       case 'universal':
         return <UniversalWalletGenerator />;
       case 'cosmos-converter':
         return <CosmosWalletGenerator />;
       default:
-        return <UniversalWalletGenerator />;
+        return <MnemonicGenerator />;
     }
   };
 

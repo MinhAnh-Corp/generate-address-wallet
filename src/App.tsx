@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { ConfigProvider, theme as antdTheme } from 'antd';
 
 import { AppLayout } from './components/AppLayout';
+import { PrivacyModal } from './components/PrivacyModal';
 import './App.css';
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
         algorithm: isDark ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
       }}
     >
+      <PrivacyModal />
       <AppLayout isDark={isDark} onThemeChange={handleThemeChange} />
     </ConfigProvider>
   );

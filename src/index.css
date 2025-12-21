@@ -33,6 +33,99 @@ html, body, #root {
   width: 100%;
 }
 
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes color-shift {
+  0% {
+    background: linear-gradient(90deg, #ff4d4f, #fa8c16);
+  }
+  25% {
+    background: linear-gradient(90deg, #fa8c16, #52c41a);
+  }
+  50% {
+    background: linear-gradient(90deg, #52c41a, #1890ff);
+  }
+  75% {
+    background: linear-gradient(90deg, #1890ff, #722ed1);
+  }
+  100% {
+    background: linear-gradient(90deg, #722ed1, #ff4d4f);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 4px 12px rgba(255, 77, 79, 0.4), 0 0 0 0 rgba(255, 77, 79, 0.7);
+  }
+  50% {
+    box-shadow: 0 4px 20px rgba(255, 77, 79, 0.6), 0 0 0 8px rgba(255, 77, 79, 0);
+  }
+}
+
+.floating-button-gradient {
+  background: linear-gradient(
+    90deg,
+    #ff4d4f,
+    #fa8c16,
+    #52c41a,
+    #1890ff,
+    #722ed1,
+    #eb2f96,
+    #ff4d4f
+  );
+  background-size: 300% 100%;
+  animation: gradient-shift 4s ease infinite, pulse-glow 2s ease-in-out infinite;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.floating-button-gradient:hover {
+  animation: gradient-shift 2s ease infinite, pulse-glow 1s ease-in-out infinite;
+  transform: scale(1.15);
+}
+
+.floating-button-gradient:active {
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .floating-button-gradient {
+    bottom: 12px !important;
+    right: 12px !important;
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+    border-radius: 20px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .floating-button-gradient {
+    bottom: 10px !important;
+    right: 10px !important;
+    padding: 5px 10px !important;
+    font-size: 11px !important;
+    border-radius: 18px !important;
+  }
+}
+
+.floating-button-gradient:hover {
+  animation-duration: 1.5s, 1s;
+  transform: scale(1.15);
+}
+
+.floating-button-gradient:active {
+  transform: scale(1.05);
+}
+
 h1 {
   font-size: 3.2em;
   line-height: 1.1;

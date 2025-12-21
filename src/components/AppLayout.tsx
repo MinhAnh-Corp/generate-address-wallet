@@ -6,6 +6,14 @@ import {
 import {
   Layout, Menu, Switch, Space, Typography, theme, Drawer, Button,
 } from 'antd';
+import { useAtom } from 'jotai';
+
+import {
+  selectedPageAtom,
+} from '../store/navigation';
+import type {
+  MenuKey,
+} from '../store/navigation';
 
 import { CosmosWalletGenerator } from './CosmosWalletGenerator';
 import { MnemonicGenerator } from './MnemonicGenerator';
@@ -16,8 +24,6 @@ const {
 } = Layout;
 const { Text } = Typography;
 
-type MenuKey = 'universal' | 'cosmos-converter' | 'mnemonic-generator';
-
 interface AppLayoutProps {
   isDark: boolean;
   onThemeChange: (isDark: boolean) => void;
@@ -26,7 +32,7 @@ interface AppLayoutProps {
 export function AppLayout({
   isDark, onThemeChange,
 }: AppLayoutProps) {
-  const [selectedKey, setSelectedKey] = useState<MenuKey>('mnemonic-generator');
+  const [selectedKey, setSelectedKey] = useAtom(selectedPageAtom);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 

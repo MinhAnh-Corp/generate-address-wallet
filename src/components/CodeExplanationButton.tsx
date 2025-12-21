@@ -73,14 +73,15 @@ export function CodeExplanationButton() {
             {t('Close')}
           </Button>,
         ]}
-        width="90%"
+        centered
+        width="calc(100vw - 32px)"
         style={{
-          maxWidth: '800px',
+          maxWidth: '700px',
         }}
         styles={{
           body: {
-            maxHeight: '70vh',
-            overflow: 'auto',
+            maxHeight: 'calc(100vh - 200px)',
+            overflowY: 'auto',
           },
         }}
       >

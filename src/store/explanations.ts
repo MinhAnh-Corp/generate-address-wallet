@@ -1,17 +1,16 @@
 import { atom } from 'jotai';
 
-import { languageAtom } from './language';
-import type { Language } from '../i18n/config';
-
 import cosmosConverterEn from '../explanations/en/cosmos-converter.md?raw';
 import mnemonicGeneratorEn from '../explanations/en/mnemonic-generator.md?raw';
 import universalWalletEn from '../explanations/en/universal-wallet.md?raw';
 import whoWeAreEn from '../explanations/en/who-we-are.md?raw';
-
 import cosmosConverterVi from '../explanations/vi/cosmos-converter.md?raw';
 import mnemonicGeneratorVi from '../explanations/vi/mnemonic-generator.md?raw';
 import universalWalletVi from '../explanations/vi/universal-wallet.md?raw';
 import whoWeAreVi from '../explanations/vi/who-we-are.md?raw';
+import type { Language } from '../i18n/config';
+
+import { languageAtom } from './language';
 
 export const EXPLANATION_KEYS = {
   MNEMONIC_GENERATOR: 'mnemonic-generator',

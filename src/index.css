@@ -256,3 +256,57 @@ ul.ant-menu.ant-menu-root.ant-menu-dark {
   border-left: none !important;
   border-right: none !important;
 }
+
+/* Modal responsive styling - ensure proper spacing on all devices */
+.ant-modal {
+  margin: 16px auto;
+}
+
+.ant-modal-content {
+  max-height: calc(100vh - 32px);
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+}
+
+.ant-modal-body {
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Ensure modal doesn't overflow on mobile */
+@media (max-width: 768px) {
+  .ant-modal {
+    margin: 16px auto !important;
+    max-width: calc(100vw - 32px) !important;
+    width: calc(100vw - 32px) !important;
+  }
+
+  .ant-modal-content {
+    max-height: calc(100vh - 32px) !important;
+    max-width: 100% !important;
+  }
+
+  .ant-modal-body {
+    max-height: calc(100vh - 200px) !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .ant-modal {
+    margin: 12px auto !important;
+    max-width: calc(100vw - 24px) !important;
+    width: calc(100vw - 24px) !important;
+  }
+
+  .ant-modal-content {
+    max-height: calc(100vh - 24px) !important;
+    max-width: 100% !important;
+  }
+
+  .ant-modal-body {
+    max-height: calc(100vh - 180px) !important;
+    padding: 16px !important;
+  }
+}

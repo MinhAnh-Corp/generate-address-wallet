@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 import { SafetyOutlined, GithubOutlined } from '@ant-design/icons';
 import {
@@ -36,12 +36,6 @@ export function PrivacyModal({
   const isControlled = controlledOpen !== undefined;
   const isOpen = isControlled ? controlledOpen : internalOpen;
 
-  useEffect(() => {
-    if (isControlled && controlledOpen !== undefined) {
-      setInternalOpen(controlledOpen);
-    }
-  }, [controlledOpen, isControlled]);
-
   const handleOk = () => {
     localStorage.setItem('privacy-notice-seen', 'true');
     if (isControlled && onClose) {
@@ -77,7 +71,17 @@ export function PrivacyModal({
       ]}
       closable={!autoOpen || isControlled}
       maskClosable={!autoOpen || isControlled}
-      width={600}
+      centered
+      width="calc(100vw - 32px)"
+      style={{
+        maxWidth: '700px',
+      }}
+      styles={{
+        body: {
+          maxHeight: 'calc(100vh - 200px)',
+          overflowY: 'auto',
+        },
+      }}
     >
       <Space direction="vertical" size="middle" style={{ width: '100%' }}>
         <Paragraph>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generate OG Image</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    canvas {
+      border: 1px solid #ddd;
+      display: block;
+      margin: 20px auto;
+    }
+    button {
+      display: block;
+      margin: 20px auto;
+      padding: 12px 24px;
+      font-size: 16px;
+      background: #1890ff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #096dd9;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>OG Image Generator</h1>
+    <div style="text-align: center; margin-bottom: 20px;">
+      <label for="logoInput" style="display: inline-block; padding: 8px 16px; background: #f0f0f0; border-radius: 4px; cursor: pointer; margin-bottom: 10px;">
+        Choose Logo Image (optional)
+      </label>
+      <input type="file" id="logoInput" accept="image/*" style="display: none;" onchange="handleLogoUpload(event)">
+      <p style="color: #666; font-size: 14px; margin-top: 10px;">Or the script will try to load from ../public/xclusive-website-logo.png</p>
+    </div>
+    <canvas id="canvas" width="1200" height="630"></canvas>
+    <button onclick="downloadImage()">Download OG Image</button>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    const WIDTH = 1200;
+    const HEIGHT = 630;
+
+    // Create gradient background (top left to bottom right)
+    const gradient = ctx.createLinearGradient(0, 0, WIDTH, HEIGHT);
+    gradient.addColorStop(0, '#1890ff');      // Blue
+    gradient.addColorStop(0.5, '#096dd9');    // Darker blue
+    gradient.addColorStop(1, '#0050b3');      // Dark blue
+
+    // Fill background
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    // Load and draw logo
+    const logo = new Image();
+
+    function drawImage() {
+      // Clear canvas and redraw background with 7-color gradient
+      const gradient = ctx.createLinearGradient(0, 0, WIDTH, HEIGHT);
+      gradient.addColorStop(0, '#1890ff');      // Blue
+      gradient.addColorStop(0.16, '#096dd9');   // Darker Blue
+      gradient.addColorStop(0.33, '#722ed1');   // Purple
+      gradient.addColorStop(0.5, '#eb2f96');    // Pink
+      gradient.addColorStop(0.66, '#fa541c');   // Orange Red
+      gradient.addColorStop(0.83, '#fa8c16');   // Orange
+      gradient.addColorStop(1, '#fadb14');      // Yellow
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+      // Add dark overlay for better text contrast
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+      ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+      if (logo.complete && logo.naturalWidth > 0) {
+        // Scale logo to 60% of canvas width
+        const logoScale = 0.6;
+        const logoWidth = WIDTH * logoScale;
+        const logoHeight = (logoWidth / logo.width) * logo.height;
+
+        // Center logo (slightly offset up for text below)
+        const logoX = (WIDTH - logoWidth) / 2;
+        const logoY = (HEIGHT - logoHeight) / 2 - 80;
+
+        ctx.drawImage(logo, logoX, logoY, logoWidth, logoHeight);
+
+        // Draw tagline text
+        const textY = logoY + logoHeight + 60;
+
+        // Main tagline
+        ctx.font = '600 48px system-ui, -apple-system, sans-serif';
+        ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillText('Professional Wallet Tools', WIDTH / 2, textY);
+
+        // Sub tagline
+        ctx.font = '400 32px system-ui, -apple-system, sans-serif';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+        ctx.fillText('Mnemonic • EVM • Cosmos SDK • RPC Tester • Encryption', WIDTH / 2, textY + 60);
+      } else {
+        // Draw text even without logo (overlay already applied above)
+        const textY = HEIGHT / 2;
+        ctx.font = '600 48px system-ui, -apple-system, sans-serif';
+        ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('Professional Wallet Tools', WIDTH / 2, textY);
+
+        ctx.font = '400 32px system-ui, -apple-system, sans-serif';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+        ctx.fillText('Mnemonic • EVM • Cosmos SDK • RPC Tester • Encryption', WIDTH / 2, textY + 60);
+      }
+    }
+
+    logo.onload = function() {
+      drawImage();
+    };
+
+    function handleLogoUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          logo.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    // Try to load logo from default path
+    logo.crossOrigin = 'anonymous';
+    logo.src = '../public/xclusive-website-logo.png';
+
+    logo.onerror = function() {
+      console.warn('Could not load logo from default path. Please use the file upload button above.');
+      // Still draw background and text even without logo
+      drawImage();
+    };
+
+    function downloadImage() {
+      const link = document.createElement('a');
+      link.download = 'og-image.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+  </script>
+</body>
+</html>
+

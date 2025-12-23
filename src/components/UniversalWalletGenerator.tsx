@@ -6,7 +6,9 @@ import {
   CopyOutlined, WalletOutlined, KeyOutlined,
 } from '@ant-design/icons';
 import { Secp256k1, sha256 } from '@cosmjs/crypto';
-import { toBech32, fromHex, toHex } from '@cosmjs/encoding';
+import {
+  toBech32, fromHex, toHex,
+} from '@cosmjs/encoding';
 import { HDKey } from '@scure/bip32';
 import { mnemonicToSeedSync } from '@scure/bip39';
 import {
@@ -53,26 +55,66 @@ interface HdPathOption {
 }
 
 const COMMON_HD_PATHS: HdPathOption[] = [
-  { value: "m/44'/60'/0'/0/0", label: "Ethereum (60) - Wallet 1", coinType: 60 },
-  { value: "m/44'/60'/0'/0/1", label: "Ethereum (60) - Wallet 2", coinType: 60 },
-  { value: "m/44'/60'/0'/0/2", label: "Ethereum (60) - Wallet 3", coinType: 60 },
-  { value: "m/44'/118'/0'/0/0", label: "Cosmos Hub (118) - Wallet 1", coinType: 118 },
-  { value: "m/44'/118'/0'/0/1", label: "Cosmos Hub (118) - Wallet 2", coinType: 118 },
-  { value: "m/44'/118'/0'/0/2", label: "Cosmos Hub (118) - Wallet 3", coinType: 118 },
-  { value: "m/44'/330'/0'/0/0", label: "Terra Classic (330) - Wallet 1", coinType: 330 },
-  { value: "m/44'/330'/0'/0/1", label: "Terra Classic (330) - Wallet 2", coinType: 330 },
-  { value: "m/44'/330'/0'/0/2", label: "Terra Classic (330) - Wallet 3", coinType: 330 },
-  { value: "m/44'/529'/0'/0/0", label: "Terra 2.0 / Secret (529) - Wallet 1", coinType: 529 },
-  { value: "m/44'/529'/0'/0/1", label: "Terra 2.0 / Secret (529) - Wallet 2", coinType: 529 },
-  { value: "m/44'/529'/0'/0/2", label: "Terra 2.0 / Secret (529) - Wallet 3", coinType: 529 },
-  { value: "m/44'/714'/0'/0/0", label: "Binance Chain (714) - Wallet 1", coinType: 714 },
-  { value: "m/44'/714'/0'/0/1", label: "Binance Chain (714) - Wallet 2", coinType: 714 },
-  { value: "m/44'/501'/0'/0/0", label: "Solana (501) - Wallet 1", coinType: 501 },
-  { value: "m/44'/354'/0'/0/0", label: "Polkadot (354) - Wallet 1", coinType: 354 },
-  { value: "m/44'/9000'/0'/0/0", label: "Avalanche C-Chain (9000) - Wallet 1", coinType: 9000 },
-  { value: "m/44'/0'/0'/0/0", label: "Bitcoin (0) - Wallet 1", coinType: 0 },
-  { value: "m/44'/2'/0'/0/0", label: "Litecoin (2) - Wallet 1", coinType: 2 },
-  { value: "m/44'/3'/0'/0/0", label: "Dogecoin (3) - Wallet 1", coinType: 3 },
+  {
+    value: "m/44'/60'/0'/0/0", label: 'Ethereum (60) - Wallet 1', coinType: 60,
+  },
+  {
+    value: "m/44'/60'/0'/0/1", label: 'Ethereum (60) - Wallet 2', coinType: 60,
+  },
+  {
+    value: "m/44'/60'/0'/0/2", label: 'Ethereum (60) - Wallet 3', coinType: 60,
+  },
+  {
+    value: "m/44'/118'/0'/0/0", label: 'Cosmos Hub (118) - Wallet 1', coinType: 118,
+  },
+  {
+    value: "m/44'/118'/0'/0/1", label: 'Cosmos Hub (118) - Wallet 2', coinType: 118,
+  },
+  {
+    value: "m/44'/118'/0'/0/2", label: 'Cosmos Hub (118) - Wallet 3', coinType: 118,
+  },
+  {
+    value: "m/44'/330'/0'/0/0", label: 'Terra Classic (330) - Wallet 1', coinType: 330,
+  },
+  {
+    value: "m/44'/330'/0'/0/1", label: 'Terra Classic (330) - Wallet 2', coinType: 330,
+  },
+  {
+    value: "m/44'/330'/0'/0/2", label: 'Terra Classic (330) - Wallet 3', coinType: 330,
+  },
+  {
+    value: "m/44'/529'/0'/0/0", label: 'Terra 2.0 / Secret (529) - Wallet 1', coinType: 529,
+  },
+  {
+    value: "m/44'/529'/0'/0/1", label: 'Terra 2.0 / Secret (529) - Wallet 2', coinType: 529,
+  },
+  {
+    value: "m/44'/529'/0'/0/2", label: 'Terra 2.0 / Secret (529) - Wallet 3', coinType: 529,
+  },
+  {
+    value: "m/44'/714'/0'/0/0", label: 'Binance Chain (714) - Wallet 1', coinType: 714,
+  },
+  {
+    value: "m/44'/714'/0'/0/1", label: 'Binance Chain (714) - Wallet 2', coinType: 714,
+  },
+  {
+    value: "m/44'/501'/0'/0/0", label: 'Solana (501) - Wallet 1', coinType: 501,
+  },
+  {
+    value: "m/44'/354'/0'/0/0", label: 'Polkadot (354) - Wallet 1', coinType: 354,
+  },
+  {
+    value: "m/44'/9000'/0'/0/0", label: 'Avalanche C-Chain (9000) - Wallet 1', coinType: 9000,
+  },
+  {
+    value: "m/44'/0'/0'/0/0", label: 'Bitcoin (0) - Wallet 1', coinType: 0,
+  },
+  {
+    value: "m/44'/2'/0'/0/0", label: 'Litecoin (2) - Wallet 1', coinType: 2,
+  },
+  {
+    value: "m/44'/3'/0'/0/0", label: 'Dogecoin (3) - Wallet 1', coinType: 3,
+  },
 ];
 
 export function UniversalWalletGenerator() {
@@ -104,7 +146,7 @@ export function UniversalWalletGenerator() {
     const seed = mnemonicToSeedSync(mnemonic);
     const hdKey = HDKey.fromMasterSeed(seed);
     const node = hdKey.derive(hdPath);
-    
+
     if (!node.privateKey) {
       throw new Error('Failed to derive EVM private key from HD path');
     }
@@ -113,7 +155,7 @@ export function UniversalWalletGenerator() {
     const privateKeyHex = Array.from(privateKeyArray)
       .map((b) => b.toString(16).padStart(2, '0'))
       .join('');
-    
+
     return new ethers.Wallet(`0x${privateKeyHex}`);
   };
 
@@ -167,14 +209,17 @@ export function UniversalWalletGenerator() {
 
       const evmAddress = evmWallet.address;
       const evmPrivateKey = evmWallet.privateKey;
-      const evmPublicKey = evmWallet.publicKey;
       const evmPublicKeyUncompressed = evmWallet.signingKey.publicKey;
+      // Compressed public key (remove 0x04 prefix if present, or use first byte to determine)
+      const evmPublicKey = evmPublicKeyUncompressed.startsWith('0x04')
+        ? `0x${evmPublicKeyUncompressed.slice(4)}`
+        : evmPublicKeyUncompressed;
 
       const cosmosPrivateKeyBytes = fromHex(cosmosPrivateKeyHex);
       const cosmosPublicKey = await Secp256k1.makeKeypair(cosmosPrivateKeyBytes);
       const cosmosPubkeyBytes = Secp256k1.compressPubkey(cosmosPublicKey.pubkey);
       const cosmosPubkeyUncompressed = cosmosPublicKey.pubkey;
-      
+
       const sha256Hash = sha256(cosmosPubkeyBytes);
       const ripemd160HashArray = ripemd160().update(sha256Hash).digest();
       const ripemd160Hash = new Uint8Array(ripemd160HashArray);
@@ -258,7 +303,8 @@ export function UniversalWalletGenerator() {
     labelKey: string,
   ) => {
     navigator.clipboard.writeText(text);
-    message.success(t('{label} copied to clipboard!', { label: t(labelKey) }));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    message.success(t('{label} copied to clipboard!', { label: t(labelKey as any) }));
   };
 
   return (
@@ -352,10 +398,13 @@ export function UniversalWalletGenerator() {
                   label: path.label,
                 }))}
                 placeholder="m/44'/118'/0'/0/0"
-                filterOption={(inputValue, option) =>
-                  option?.value?.toUpperCase().includes(inputValue.toUpperCase()) ||
-                  option?.label?.toUpperCase().includes(inputValue.toUpperCase())
-                }
+                filterOption={(inputValue, option) => {
+                  if (!option) return false;
+                  return (
+                    option.value?.toUpperCase().includes(inputValue.toUpperCase()) ||
+                    option.label?.toUpperCase().includes(inputValue.toUpperCase())
+                  );
+                }}
                 onChange={(value) => {
                   setHdPath(value);
                   lastSubmittedValues.current = null;

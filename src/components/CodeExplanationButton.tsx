@@ -18,13 +18,14 @@ const {
   Paragraph, Title,
 } = Typography;
 
-type RouteKey = 'mnemonic-generator' | 'universal' | 'cosmos-converter' | 'rpc-tester' | 'who-we-are';
+type RouteKey = 'mnemonic-generator' | 'universal' | 'cosmos-converter' | 'rpc-tester' | 'encrypt-wallet' | 'who-we-are';
 
 const ROUTE_TO_EXPLANATION_KEY: Record<RouteKey, keyof typeof EXPLANATION_KEYS> = {
   'mnemonic-generator': 'MNEMONIC_GENERATOR',
   'universal': 'UNIVERSAL_WALLET',
   'cosmos-converter': 'COSMOS_CONVERTER',
   'rpc-tester': 'RPC_TESTER',
+  'encrypt-wallet': 'ENCRYPT_WALLET',
   'who-we-are': 'WHO_WE_ARE',
 };
 

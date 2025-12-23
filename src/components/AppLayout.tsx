@@ -3,7 +3,7 @@ import {
 } from 'react';
 
 import {
-  WalletOutlined, SwapOutlined, MenuOutlined, KeyOutlined, TeamOutlined, ApiOutlined, HomeOutlined,
+  WalletOutlined, SwapOutlined, MenuOutlined, KeyOutlined, TeamOutlined, ApiOutlined, HomeOutlined, LockOutlined,
 } from '@ant-design/icons';
 import {
   Layout, Menu, Typography, theme, Drawer, Button,
@@ -84,6 +84,12 @@ export function AppLayout({
       icon: <ApiOutlined />,
       label: t('RPC Tester'),
       path: '/rpc-tester',
+    },
+    {
+      key: 'encrypt-wallet',
+      icon: <LockOutlined />,
+      label: t('Encrypt Wallet'),
+      path: '/encrypt-wallet',
     },
     {
       key: 'who-we-are',

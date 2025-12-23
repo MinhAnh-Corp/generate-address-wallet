@@ -1,11 +1,13 @@
 import { atom } from 'jotai';
 
 import cosmosConverterEn from '../explanations/en/cosmos-converter.md?raw';
+import encryptWalletEn from '../explanations/en/encrypt-wallet.md?raw';
 import mnemonicGeneratorEn from '../explanations/en/mnemonic-generator.md?raw';
 import rpcTesterEn from '../explanations/en/rpc-tester.md?raw';
 import universalWalletEn from '../explanations/en/universal-wallet.md?raw';
 import whoWeAreEn from '../explanations/en/who-we-are.md?raw';
 import cosmosConverterVi from '../explanations/vi/cosmos-converter.md?raw';
+import encryptWalletVi from '../explanations/vi/encrypt-wallet.md?raw';
 import mnemonicGeneratorVi from '../explanations/vi/mnemonic-generator.md?raw';
 import rpcTesterVi from '../explanations/vi/rpc-tester.md?raw';
 import universalWalletVi from '../explanations/vi/universal-wallet.md?raw';
@@ -19,6 +21,7 @@ export const EXPLANATION_KEYS = {
   UNIVERSAL_WALLET: 'universal-wallet',
   COSMOS_CONVERTER: 'cosmos-converter',
   RPC_TESTER: 'rpc-tester',
+  ENCRYPT_WALLET: 'encrypt-wallet',
   WHO_WE_ARE: 'who-we-are',
 } as const;
 
@@ -30,6 +33,7 @@ const explanationsByLanguage: Record<Language, Record<ExplanationKey, string>> =
     [EXPLANATION_KEYS.UNIVERSAL_WALLET]: universalWalletEn,
     [EXPLANATION_KEYS.COSMOS_CONVERTER]: cosmosConverterEn,
     [EXPLANATION_KEYS.RPC_TESTER]: rpcTesterEn,
+    [EXPLANATION_KEYS.ENCRYPT_WALLET]: encryptWalletEn,
     [EXPLANATION_KEYS.WHO_WE_ARE]: whoWeAreEn,
   },
   vi: {
@@ -37,6 +41,7 @@ const explanationsByLanguage: Record<Language, Record<ExplanationKey, string>> =
     [EXPLANATION_KEYS.UNIVERSAL_WALLET]: universalWalletVi,
     [EXPLANATION_KEYS.COSMOS_CONVERTER]: cosmosConverterVi,
     [EXPLANATION_KEYS.RPC_TESTER]: rpcTesterVi,
+    [EXPLANATION_KEYS.ENCRYPT_WALLET]: encryptWalletVi,
     [EXPLANATION_KEYS.WHO_WE_ARE]: whoWeAreVi,
   },
 };

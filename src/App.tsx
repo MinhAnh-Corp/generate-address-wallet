@@ -7,6 +7,7 @@ import {
 
 import { AppLayout } from './components/AppLayout';
 import { CosmosWalletGenerator } from './components/CosmosWalletGenerator';
+import { EncryptWallet } from './components/EncryptWallet';
 import { MnemonicGenerator } from './components/MnemonicGenerator';
 import { PrivacyModal } from './components/PrivacyModal';
 import { RPCTester } from './components/RPCTester';
@@ -52,6 +53,7 @@ function App() {
             <Route path="/universal" element={<UniversalWalletGenerator />} />
             <Route path="/cosmos-converter" element={<CosmosWalletGenerator />} />
             <Route path="/rpc-tester" element={<RPCTester />} />
+            <Route path="/encrypt-wallet" element={<EncryptWallet />} />
             <Route path="/who-we-are" element={<WhoWeAre />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

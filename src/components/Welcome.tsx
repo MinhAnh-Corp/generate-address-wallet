@@ -1,6 +1,6 @@
 import {
   HomeOutlined,
-  KeyOutlined, WalletOutlined, SwapOutlined, ApiOutlined, TeamOutlined,
+  KeyOutlined, WalletOutlined, SwapOutlined, ApiOutlined, TeamOutlined, LockOutlined,
 } from '@ant-design/icons';
 import {
   Card, Typography, Space, Row, Col, Button,
@@ -44,6 +44,13 @@ export function Welcome() {
       title: t('RPC Tester'),
       description: t('Test if an RPC endpoint is working by connecting to it and retrieving basic information.'),
       path: '/rpc-tester',
+    },
+    {
+      key: 'encrypt-wallet',
+      icon: <LockOutlined style={{ fontSize: '32px' }} />,
+      title: t('Encrypt Wallet'),
+      description: t('Encrypt and decrypt private keys or mnemonic phrases using AES encryption.'),
+      path: '/encrypt-wallet',
     },
     {
       key: 'who-we-are',

@@ -4,7 +4,7 @@ import {
   ApiOutlined, CheckCircleOutlined, CloseCircleOutlined,
 } from '@ant-design/icons';
 import {
-  Card, Form, Input, Button, Typography, message, Space, Radio, Alert, Spin,
+  Card, Form, Input, Button, Typography, message, Space, Radio, Alert, Spin, Select,
 } from 'antd';
 import { ethers } from 'ethers';
 import { useTranslation } from 'react-i18next';
@@ -20,13 +20,60 @@ interface RPCResult {
     chainId?: string;
     blockNumber?: string;
     networkId?: string;
+    gasPrice?: string;
+    blockTime?: number;
     nodeInfo?: {
       network?: string;
       version?: string;
       [key: string]: unknown;
     };
+    latestBlockHeight?: string;
+    syncInfo?: {
+      latest_block_height?: string;
+      earliest_block_height?: string;
+      catching_up?: boolean;
+    };
   };
 }
+
+interface DefaultRPC {
+  label: string;
+  url: string;
+  type: 'eth' | 'cosmos';
+}
+
+const DEFAULT_RPCS: DefaultRPC[] = [
+  {
+    label: 'Ethereum Mainnet',
+    url: 'https://eth.llamarpc.com',
+    type: 'eth',
+  },
+  {
+    label: 'Ethereum Mainnet (Public)',
+    url: 'https://rpc.ankr.com/eth',
+    type: 'eth',
+  },
+  {
+    label: 'Kaia Mainnet',
+    url: 'https://public-en.node.kaia.io',
+    type: 'eth',
+  },
+  {
+    label: 'Cosmos Hub (Polkachu)',
+    url: 'https://cosmos-rpc.polkachu.com',
+    type: 'cosmos',
+  },
+  {
+    label: 'STOC Mainnet',
+    url: 'https://rpc-stoc-mainnet.stochainscan.io',
+    type: 'cosmos',
+  },
+  {
+    label: 'STOC Testnet',
+    url: 'https://rpc-stoc-testnet.stochainscan.io',
+    type: 'cosmos',
+  },
+];
 
 export function RPCTester() {
   const [form] = Form.useForm();
@@ -57,13 +104,18 @@ export function RPCTester() {
         blockNumber,
         chainId,
         networkId,
+        latestBlock,
+        gasPrice,
       ] = await Promise.all([
         provider.getBlockNumber(),
         provider.getNetwork().then((n) => n.chainId.toString()),
         provider.send('net_version', []).catch(() => 'N/A'),
+        provider.getBlock('latest').catch(() => null),
+        provider.getFeeData().catch(() => null),
       ]);
 
       const responseTime = Date.now() - startTime;
+      const blockTime = latestBlock?.timestamp ? Date.now() / 1000 - Number(latestBlock.timestamp) : undefined;
 
       return {
         success: true,
@@ -72,6 +124,8 @@ export function RPCTester() {
           chainId,
           blockNumber: blockNumber.toString(),
           networkId: networkId.toString(),
+          gasPrice: gasPrice?.gasPrice ? ethers.formatUnits(gasPrice.gasPrice, 'gwei') : undefined,
+          blockTime: blockTime ? Math.round(blockTime) : undefined,
         },
       };
     } catch (error: unknown) {
@@ -106,11 +160,20 @@ export function RPCTester() {
       const data = await response.json();
       const responseTime = Date.now() - startTime;
 
+      const nodeInfo = data.result?.node_info;
+      const syncInfo = data.result?.sync_info;
+
       return {
         success: true,
         responseTime,
         details: {
-          nodeInfo: data.result?.node_info,
+          nodeInfo,
+          latestBlockHeight: syncInfo?.latest_block_height,
+          syncInfo: {
+            latest_block_height: syncInfo?.latest_block_height,
+            earliest_block_height: syncInfo?.earliest_block_height,
+            catching_up: syncInfo?.catching_up,
+          },
         },
       };
     } catch (error: unknown) {
@@ -173,6 +236,16 @@ export function RPCTester() {
         },
       }}
     >
+      <Alert
+        message={t('How to Use')}
+        description={t('If you don\'t have an RPC URL, select one from the dropdown below or paste your RPC URL in the input field.')}
+        type="info"
+        showIcon
+        style={{
+          marginBottom: 24, fontSize: '14px',
+        }}
+      />
+
       <Form
         form={form}
         layout="vertical"
@@ -187,11 +260,45 @@ export function RPCTester() {
             onChange={(e) => {
               setRpcType(e.target.value);
               setResult(null);
+              form.setFieldValue('rpcUrl', '');
             }}
           >
             <Radio value="eth">{t('Ethereum (ETH)')}</Radio>
             <Radio value="cosmos">{t('Cosmos')}</Radio>
           </Radio.Group>
+        </Form.Item>
+
+        <Form.Item
+          label={t('Quick Select (Optional)')}
+        >
+          <Select
+            placeholder={t('Select a default RPC endpoint')}
+            style={{ width: '100%' }}
+            onChange={(value) => {
+              if (value) {
+                const selectedRPC = DEFAULT_RPCS.find((rpc) => rpc.url === value);
+                if (selectedRPC) {
+                  setRpcType(selectedRPC.type);
+                  form.setFieldValue('rpcUrl', selectedRPC.url);
+                }
+              } else {
+                form.setFieldValue('rpcUrl', '');
+              }
+            }}
+            options={DEFAULT_RPCS.map((rpc) => ({
+              label: `${rpc.label} (${rpc.type === 'eth' ? 'ETH' : 'Cosmos'})`,
+              value: rpc.url,
+            }))}
+            allowClear
+            showSearch
+            filterOption={(input, option) => {
+              if (!option) return false;
+              return (
+                (option.label as string)?.toLowerCase().includes(input.toLowerCase()) ||
+                (option.value as string)?.toLowerCase().includes(input.toLowerCase())
+              );
+            }}
+          />
         </Form.Item>
 
         <Form.Item
@@ -270,18 +377,43 @@ export function RPCTester() {
                             {t('Network ID')}: <Text strong code>{result.details.networkId}</Text>
                           </Text>
                         )}
+                        {result.details.gasPrice && (
+                          <Text>
+                            {t('Gas Price')}: <Text strong code>{result.details.gasPrice} Gwei</Text>
+                          </Text>
+                        )}
+                        {result.details.blockTime !== undefined && (
+                          <Text>
+                            {t('Block Age')}: <Text strong code>{result.details.blockTime}s ago</Text>
+                          </Text>
+                        )}
                       </>
                     )}
-                    {rpcType === 'cosmos' && result.details?.nodeInfo && (
+                    {rpcType === 'cosmos' && result.details && (
                       <>
-                        {result.details.nodeInfo.network && (
+                        {result.details.nodeInfo?.network && (
                           <Text>
                             {t('Network')}: <Text strong code>{result.details.nodeInfo.network}</Text>
                           </Text>
                         )}
-                        {result.details.nodeInfo.version && (
+                        {result.details.nodeInfo?.version && (
                           <Text>
                             {t('Version')}: <Text strong code>{result.details.nodeInfo.version}</Text>
+                          </Text>
+                        )}
+                        {result.details.latestBlockHeight && (
+                          <Text>
+                            {t('Latest Block Height')}: <Text strong code>{result.details.latestBlockHeight}</Text>
+                          </Text>
+                        )}
+                        {result.details.syncInfo?.earliest_block_height && (
+                          <Text>
+                            {t('Earliest Block Height')}: <Text strong code>{result.details.syncInfo.earliest_block_height}</Text>
+                          </Text>
+                        )}
+                        {result.details.syncInfo?.catching_up !== undefined && (
+                          <Text>
+                            {t('Sync Status')}: <Text strong code>{result.details.syncInfo.catching_up ? t('Catching Up') : t('Synced')}</Text>
                           </Text>
                         )}
                       </>

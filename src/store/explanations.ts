@@ -2,10 +2,12 @@ import { atom } from 'jotai';
 
 import cosmosConverterEn from '../explanations/en/cosmos-converter.md?raw';
 import mnemonicGeneratorEn from '../explanations/en/mnemonic-generator.md?raw';
+import rpcTesterEn from '../explanations/en/rpc-tester.md?raw';
 import universalWalletEn from '../explanations/en/universal-wallet.md?raw';
 import whoWeAreEn from '../explanations/en/who-we-are.md?raw';
 import cosmosConverterVi from '../explanations/vi/cosmos-converter.md?raw';
 import mnemonicGeneratorVi from '../explanations/vi/mnemonic-generator.md?raw';
+import rpcTesterVi from '../explanations/vi/rpc-tester.md?raw';
 import universalWalletVi from '../explanations/vi/universal-wallet.md?raw';
 import whoWeAreVi from '../explanations/vi/who-we-are.md?raw';
 import type { Language } from '../i18n/config';
@@ -16,6 +18,7 @@ export const EXPLANATION_KEYS = {
   MNEMONIC_GENERATOR: 'mnemonic-generator',
   UNIVERSAL_WALLET: 'universal-wallet',
   COSMOS_CONVERTER: 'cosmos-converter',
+  RPC_TESTER: 'rpc-tester',
   WHO_WE_ARE: 'who-we-are',
 } as const;
 
@@ -26,12 +29,14 @@ const explanationsByLanguage: Record<Language, Record<ExplanationKey, string>> =
     [EXPLANATION_KEYS.MNEMONIC_GENERATOR]: mnemonicGeneratorEn,
     [EXPLANATION_KEYS.UNIVERSAL_WALLET]: universalWalletEn,
     [EXPLANATION_KEYS.COSMOS_CONVERTER]: cosmosConverterEn,
+    [EXPLANATION_KEYS.RPC_TESTER]: rpcTesterEn,
     [EXPLANATION_KEYS.WHO_WE_ARE]: whoWeAreEn,
   },
   vi: {
     [EXPLANATION_KEYS.MNEMONIC_GENERATOR]: mnemonicGeneratorVi,
     [EXPLANATION_KEYS.UNIVERSAL_WALLET]: universalWalletVi,
     [EXPLANATION_KEYS.COSMOS_CONVERTER]: cosmosConverterVi,
+    [EXPLANATION_KEYS.RPC_TESTER]: rpcTesterVi,
     [EXPLANATION_KEYS.WHO_WE_ARE]: whoWeAreVi,
   },
 };

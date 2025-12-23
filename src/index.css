@@ -128,15 +128,6 @@ html, body, #root {
   }
 }
 
-.floating-button-gradient:hover {
-  animation-duration: 1.5s, 1s;
-  transform: scale(1.15);
-}
-
-.floating-button-gradient:active {
-  transform: scale(1.05);
-}
-
 h1 {
   font-size: 3.2em;
   line-height: 1.1;

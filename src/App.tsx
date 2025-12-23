@@ -1,9 +1,18 @@
 import { useState, useEffect } from 'react';
 
 import { ConfigProvider, theme as antdTheme } from 'antd';
+import {
+  BrowserRouter, Routes, Route, Navigate,
+} from 'react-router-dom';
 
 import { AppLayout } from './components/AppLayout';
+import { CosmosWalletGenerator } from './components/CosmosWalletGenerator';
+import { MnemonicGenerator } from './components/MnemonicGenerator';
 import { PrivacyModal } from './components/PrivacyModal';
+import { RPCTester } from './components/RPCTester';
+import { UniversalWalletGenerator } from './components/UniversalWalletGenerator';
+import { Welcome } from './components/Welcome';
+import { WhoWeAre } from './components/WhoWeAre';
 import './App.css';
 
 function App() {
@@ -33,8 +42,21 @@ function App() {
         },
       }}
     >
-      <PrivacyModal />
-      <AppLayout isDark={isDark} onThemeChange={handleThemeChange} />
+      <BrowserRouter>
+        <PrivacyModal />
+        <AppLayout isDark={isDark} onThemeChange={handleThemeChange}>
+          <Routes>
+            <Route path="/" element={<Welcome />} />
+            <Route path="/welcome" element={<Welcome />} />
+            <Route path="/mnemonic-generator" element={<MnemonicGenerator />} />
+            <Route path="/universal" element={<UniversalWalletGenerator />} />
+            <Route path="/cosmos-converter" element={<CosmosWalletGenerator />} />
+            <Route path="/rpc-tester" element={<RPCTester />} />
+            <Route path="/who-we-are" element={<WhoWeAre />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </AppLayout>
+      </BrowserRouter>
     </ConfigProvider>
   );
 }

@@ -1,27 +1,18 @@
-import { useState, useEffect } from 'react';
+import {
+  useState, useEffect, type ReactNode,
+} from 'react';
 
 import {
-  WalletOutlined, SwapOutlined, MenuOutlined, KeyOutlined, TeamOutlined,
+  WalletOutlined, SwapOutlined, MenuOutlined, KeyOutlined, TeamOutlined, ApiOutlined, HomeOutlined,
 } from '@ant-design/icons';
 import {
   Layout, Menu, Typography, theme, Drawer, Button,
 } from 'antd';
-import { useAtom } from 'jotai';
 import { useTranslation } from 'react-i18next';
-
-import {
-  selectedPageAtom,
-} from '../store/navigation';
-import type {
-  MenuKey,
-} from '../store/navigation';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { CodeExplanationButton } from './CodeExplanationButton';
-import { CosmosWalletGenerator } from './CosmosWalletGenerator';
 import { Header } from './Header';
-import { MnemonicGenerator } from './MnemonicGenerator';
-import { UniversalWalletGenerator } from './UniversalWalletGenerator';
-import { WhoWeAre } from './WhoWeAre';
 
 const {
   Sider, Content, Footer,
@@ -31,12 +22,14 @@ const { Text } = Typography;
 interface AppLayoutProps {
   isDark: boolean;
   onThemeChange: (isDark: boolean) => void;
+  children: ReactNode;
 }
 
 export function AppLayout({
-  isDark, onThemeChange,
+  isDark, onThemeChange, children,
 }: AppLayoutProps) {
-  const [selectedKey, setSelectedKey] = useAtom(selectedPageAtom);
+  const location = useLocation();
+  const navigate = useNavigate();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const { t } = useTranslation();
@@ -53,48 +46,60 @@ export function AppLayout({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  const getSelectedKey = () => {
+    const path = location.pathname;
+    if (path === '/' || path === '/welcome') return 'welcome';
+    return path.slice(1) || 'welcome';
+  };
+
+  const selectedKey = getSelectedKey();
+
   const menuItems = [
+    {
+      key: 'welcome',
+      icon: <HomeOutlined />,
+      label: t('Welcome'),
+      path: '/',
+    },
     {
       key: 'mnemonic-generator',
       icon: <KeyOutlined />,
       label: t('Mnemonic Generator'),
+      path: '/mnemonic-generator',
     },
     {
       key: 'universal',
       icon: <WalletOutlined />,
       label: t('Universal Wallet Generator'),
+      path: '/universal',
     },
     {
       key: 'cosmos-converter',
       icon: <SwapOutlined />,
       label: t('Cosmos Address Converter'),
+      path: '/cosmos-converter',
+    },
+    {
+      key: 'rpc-tester',
+      icon: <ApiOutlined />,
+      label: t('RPC Tester'),
+      path: '/rpc-tester',
     },
     {
       key: 'who-we-are',
       icon: <TeamOutlined />,
       label: t('Who We Are'),
+      path: '/who-we-are',
     },
   ];
 
-  const handleMenuClick = (key: MenuKey) => {
-    setSelectedKey(key);
-    if (isMobile) {
-      setDrawerOpen(false);
-    }
-  };
-
-  const renderContent = () => {
-    switch (selectedKey) {
-      case 'mnemonic-generator':
-        return <MnemonicGenerator />;
-      case 'universal':
-        return <UniversalWalletGenerator />;
-      case 'cosmos-converter':
-        return <CosmosWalletGenerator />;
-      case 'who-we-are':
-        return <WhoWeAre />;
-      default:
-        return <MnemonicGenerator />;
+  const handleMenuClick = ({ key }: { key: string }) => {
+    const item = menuItems.find((i) => i.key === key);
+    if (item) {
+      navigate(item.path);
+      if (isMobile) {
+        setDrawerOpen(false);
+      }
     }
   };
 
@@ -103,7 +108,7 @@ export function AppLayout({
       mode="inline"
       selectedKeys={[selectedKey]}
       items={menuItems}
-      onClick={({ key }) => handleMenuClick(key as MenuKey)}
+      onClick={handleMenuClick}
       style={{
         borderRight: 0,
         height: isMobile ? 'auto' : 'calc(100vh - 64px)',
@@ -165,7 +170,7 @@ export function AppLayout({
             overflow: 'auto',
           }}
         >
-          {renderContent()}
+          {children}
         </Content>
 
         <Footer

@@ -7,32 +7,48 @@ import {
 import { useAtomValue } from 'jotai';
 import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
+import { useLocation } from 'react-router-dom';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import remarkGfm from 'remark-gfm';
 
 import { explanationsAtom, EXPLANATION_KEYS } from '../store/explanations';
-import { selectedPageAtom } from '../store/navigation';
-import type { MenuKey } from '../store/navigation';
 
 const {
   Paragraph, Title,
 } = Typography;
 
-const MENU_KEY_TO_EXPLANATION_KEY: Record<MenuKey, keyof typeof EXPLANATION_KEYS> = {
+type RouteKey = 'mnemonic-generator' | 'universal' | 'cosmos-converter' | 'rpc-tester' | 'who-we-are';
+
+const ROUTE_TO_EXPLANATION_KEY: Record<RouteKey, keyof typeof EXPLANATION_KEYS> = {
   'mnemonic-generator': 'MNEMONIC_GENERATOR',
   'universal': 'UNIVERSAL_WALLET',
   'cosmos-converter': 'COSMOS_CONVERTER',
+  'rpc-tester': 'RPC_TESTER',
   'who-we-are': 'WHO_WE_ARE',
 };
 
 export function CodeExplanationButton() {
   const [isOpen, setIsOpen] = useState(false);
-  const selectedPage = useAtomValue(selectedPageAtom);
+  const location = useLocation();
   const explanations = useAtomValue(explanationsAtom);
   const { t } = useTranslation();
 
-  const explanationKey = MENU_KEY_TO_EXPLANATION_KEY[selectedPage];
+  const getRouteKey = (): RouteKey | null => {
+    const path = location.pathname.slice(1) || 'welcome';
+    if (path === 'welcome' || path === '') {
+      return 'who-we-are';
+    }
+    return path as RouteKey;
+  };
+
+  const routeKey = getRouteKey();
+
+  if (!routeKey || !ROUTE_TO_EXPLANATION_KEY[routeKey]) {
+    return null;
+  }
+
+  const explanationKey = ROUTE_TO_EXPLANATION_KEY[routeKey];
   const markdown = explanations[EXPLANATION_KEYS[explanationKey]];
 
   const extractedTitle = markdown.split('\n').find((line) => line.startsWith('# '))?.replace(/^# /, '').trim() || t('Code Explanation');
